@@ -36,8 +36,11 @@ let chatbot = {
     }
   },
 
-  // Funcion donde se procesara el evento
-  processEvent(event) {
+ 
+};
+
+ // Funcion donde se procesara el evento
+  function processEvent(event) {
     // Capturamos los datos del que genera el evento y el mensaje
     var senderID = event.sender.id;
     var message = event.message;
@@ -52,10 +55,10 @@ let chatbot = {
 
     // Enviamos el mensaje mediante SendAPI
     sendText(senderID, response);
-  },
+  };
 
   // Funcion donde el chat respondera usando SendAPI
-  sendText(senderID, response) {
+   function sendText(senderID, response) {
     // Construcicon del cuerpo del mensaje
     let request_body = {
       recipient: {
@@ -80,6 +83,6 @@ let chatbot = {
         }
       }
     );
-  },
-};
+  }
+
 module.exports = chatbot;
