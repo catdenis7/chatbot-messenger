@@ -1,3 +1,4 @@
+import chatbot from "./controller/chatbot";
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var request = require("request");
@@ -10,9 +11,7 @@ app.use(bodyParser.json());
 app.listen((process.env.PORT || 5000), () => console.log('El servidor webhook esta escuchando!'));
 
 // Ruta de la pagina index
-app.get("/", function (req, res) {
-    res.send("Se ha desplegado de manera exitosa el Vellaryon ChatBot :D!!!");
-});
+app.get("/", (req, res)=> chatbot.index(req, res));
 
 // Facebook Webhook
 
