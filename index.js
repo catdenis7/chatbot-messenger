@@ -1,7 +1,6 @@
 var chatbot = require("./controller/chatbot");
 // Importar las dependencias para configurar el servidor
 var express = require("express");
-var request = require("request");
 var bodyParser = require("body-parser");
 
 var app = express();
