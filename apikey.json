@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "velaryonbot-naos",
+  "private_key_id": "e3145273a4c3a40e1c7b9c612e653502abe337ca",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC+09ItJlTE05Bh\nICOyU7jyxXh1pE8hvQd1oFUmIgWk96YwkelWOjvQ4G9f79xDZ4tdxQtGz5L+RO2j\ni4GKdnd6kzpmpKQcmzunkrKvXTfmkNwsWRw/c9rQgrKomb835fBaiIVhFptr26jz\n5UHRKXj09XyTOWOirvCynDiY4r0d8Kou9er5cs9oA4MD1ccmPcWJRXfy3AuDB2xQ\na4cCT8cogSzlFfBUxqhNcK29JJ0r1WW0PsJZay5+PSqaY1EMBd4lu8J2IYZds57H\ngvaMyQl2b1zYkb13a/oaCEXtJ23E1YjLx2k6pDz3krYYkL7lRr/OOOX5PzXFoiz3\n99sOZuYBAgMBAAECgf8EcvvbgaFIVYZwPUeXyMvvHRuJ4qLVroqV+38AvJpVFlER\noNVH5WOvowv1uKnyCF//d7CjngNXWlQQFBiZGdn/SZ969Su+XwAtEAaKgCnlfksj\n3ZADCrh3VBTGSY9jxkCsW7KAaP6GrUBrL1Uxgz4GuBKHfDcOe/WwtGO9bMvr/r4l\nabaUVYnmWS9AnduZBC8plH2Mkur7eEii5EIywvNL1IMSyGzRbFrAjnyTt7NUDPEC\n4/5sSaRxtfbPs4zIkGlTPBEjnEebOFpd7nxOSzNjdHz6WdSz9VTh9u2w7ZSVcire\nzEC4J1jU0/xr9SC5mbpUpY9zVX8WD08Fh0fMuiECgYEA60SXvFgHrFeOsJJg1hiv\nCcrsuGhpHCBAVhXNQ8FX9t0HHCbC/rcrCxU5XvV5Q4ZPzWYUUJ7KPPsErZ326NvB\nqX8F3QavAdUentYImBDTLkbDC7+FdbsxHXNTc6iTSZ6wq+vFOFxuokcdV16rBIHU\n9y7+r2Uc8mKoG4hldstTS+ECgYEAz6Sx8/vesyq+8Pf47Th78GPvAmDSK/hYfj3R\nrqShBMV6P8XHnjTd7ifsuvnidoFJxed2n0CmLprxXTWpT1+lu2l+NeiCEAKOs9Uw\nRuXtiE/cftzu86p3CP/ebcSzYqMAnw8RA+Y9eymetdslR1WhYFmMoFBKETL+k/no\nnpB93iECgYEAgo495ba0C19LP5D7S9PGzphdZLgMHB+JlDvk/IR+W++r0mNwMglT\nSYMtoxR1hpMyFblf7J0xfUWPAwl1yyKoBXcHue/LjijGJT6A5mHvzu5Vrl9JoFuQ\nldc5qCUUFvaI896SQwSIIGV2UtWl8YpatBDQJGTn+1nkD+NQ6utJ/gECgYEAweIc\nr579IPrG86X3bzmQsLP/Vo8lcB0iNC5w/cuG9jeWoLmCXP0sRNZOu3/cr56lTf+E\nycrJ4TaYLNqQTycWT1p/mMKTv3ND4DMuMuU62E8JqgONs0P2hha0kHZcsbtWNy8Q\nSj3QJpKEOXZ45pTUbGzxXDfcERc2kuGFDZoJjUECgYB1ci1cluPBTV8GoJ9iZQHX\nrbpk1DmMaOp+Z6kS9TpTUpVZCV6jjvITmGLGvYAvcA4oLhGdECFkaeb6kiFl3nfz\n/5uNtosP+ljnaYwFdaJf7N74icHvVaTWT9EHP+ypJzE1l+3bk2QoTucVUVMOKfGQ\nEGjetq2qvBB/UvwMetkETg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "testing@velaryonbot-naos.iam.gserviceaccount.com",
+  "client_id": "103035006838565574592",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/testing%40velaryonbot-naos.iam.gserviceaccount.com"
+}

@@ -1,4 +1,5 @@
 var chatbot = require("./controller/chatbot");
+var dialogflowApi = require("./controller/dialogflow");
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -19,5 +20,7 @@ app.get("/webhook", (req, res)=> chatbot.verification(req, res));
 
 // Todos eventos de mesenger seran capturados por esta ruta
 app.post("/webhook", (req, res)=> chatbot.responseHandler(req, res));
+
+app.post("/dialogflow/send", async (req, res)  => dialogflowApi.sendText(req,res));
 
 
