@@ -9,6 +9,9 @@ let dialogflowApi = {
             "data" : response
         }
         res.send(responseJson);
+    },
+    async processText(input){
+        return await runSample(input);
     }
 }
 

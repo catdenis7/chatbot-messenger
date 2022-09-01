@@ -51,7 +51,7 @@ function processEvent(event) {
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
-        let dialogFlowResponse = dialogflowApi.sendText(message.text);
+        let dialogFlowResponse = dialogflowApi.processText(message.text);
         var response = {
             text: dialogFlowResponse,
         };
