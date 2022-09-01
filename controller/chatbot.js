@@ -23,7 +23,7 @@ let chatbot = {
         }
     },
 
-    responseHandler(req, res) {
+    async responseHandler(req, res) {
         // Verificar si el evento proviene del pagina asociada
         if (req.body.object == "page") {
             // Si existe multiples entradas entradas
@@ -31,7 +31,7 @@ let chatbot = {
                 // Iterara todos lo eventos capturados
                 entry.messaging.forEach(function(event) {
                     if (event.message) {
-                        processEvent(event);
+                        await processEvent(event);
                     }
                 });
             });
@@ -43,7 +43,7 @@ let chatbot = {
 };
 
 // Funcion donde se procesara el evento
-function processEvent(event) {
+async function processEvent(event) {
     // Capturamos los datos del que genera el evento y el mensaje
     var senderID = event.sender.id;
     var message = event.message;
@@ -51,7 +51,7 @@ function processEvent(event) {
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
-        let dialogFlowResponse = dialogflowApi.processText(message.text);
+        let dialogFlowResponse = await dialogflowApi.processText(message.text);
         var response = {
             text: dialogFlowResponse,
         };
