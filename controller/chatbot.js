@@ -23,13 +23,13 @@ let chatbot = {
         }
     },
 
-    async responseHandler(req, res) {
+    responseHandler(req, res) {
         // Verificar si el evento proviene del pagina asociada
         if (req.body.object == "page") {
             // Si existe multiples entradas entradas
             req.body.entry.forEach(function(entry) {
                 // Iterara todos lo eventos capturados
-                entry.messaging.forEach(function(event) {
+                entry.messaging.forEach(async function(event) {
                     if (event.message) {
                         await processEvent(event);
                     }

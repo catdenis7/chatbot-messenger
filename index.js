@@ -19,7 +19,7 @@ app.get("/", (req, res)=> chatbot.index(req, res));
 app.get("/webhook", (req, res)=> chatbot.verification(req, res));
 
 // Todos eventos de mesenger seran capturados por esta ruta
-app.post("/webhook", async (req, res)=> chatbot.responseHandler(req, res));
+app.post("/webhook", (req, res)=> chatbot.responseHandler(req, res));
 
 app.post("/dialogflow/send", async (req, res)  => dialogflowApi.sendText(req,res));
 
