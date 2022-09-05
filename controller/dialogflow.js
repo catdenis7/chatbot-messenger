@@ -58,7 +58,7 @@ async function runSample(inputText, senderID) {
 
 function idToUuid(sessionId) {
     let byteArray = [];
-    for (let i = 0; i < sessionId.length; i++) {
+    for (let i = 0; i < 16; i++) {
         let sessionIDStr = String(sessionId);
         byteArray[i] = Number(sessionIDStr.charAt(i));
     }
