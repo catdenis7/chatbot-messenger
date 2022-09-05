@@ -47,7 +47,7 @@ async function processEvent(event) {
     // Capturamos los datos del que genera el evento y el mensaje
     var senderID = event.sender.id;
     var message = event.message;
-
+    console.log("id-facebook " + senderID);
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
