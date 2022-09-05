@@ -2,6 +2,7 @@ var request = require("request");
 
 const { response } = require("express");
 const dialogflowApi = require("./dialogflow");
+const { json } = require("body-parser");
 
 let chatbot = {
     index(req, res) {
@@ -47,7 +48,8 @@ async function processEvent(event) {
     // Capturamos los datos del que genera el evento y el mensaje
     var senderID = event.sender.id;
     var message = event.message;
-    console.log("id-facebook " + senderID);
+    console.log(JSON.stringify(event));
+
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
