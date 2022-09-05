@@ -18,7 +18,7 @@ let dialogflowApi = {
 async function runSample(inputText, senderID) {
     const rawKey = require('../apikey.json');
     let apikey = JSON.parse(JSON.stringify(rawKey));
-    const sessionId = senderID;
+    let sessionId = idToUuid(senderID);
     console.log(sessionId);
     //  Creando Sesion nueva
     const sessionClient = new dialogflow.SessionsClient({
@@ -54,6 +54,15 @@ async function runSample(inputText, senderID) {
     } else {
         return null;
     }
+}
+
+function idToUuid(sessionId) {
+    let byteArray = [];
+    for (let i = 0; i < sessionId.length; i++) {
+        let sessionIDStr = String(sessionId);
+        byteArray[i] = Number(sessionIDStr.charAt(i));
+    }
+    return uuid.v4(byteArray);
 }
 
 module.exports = dialogflowApi;
