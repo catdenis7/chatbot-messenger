@@ -81,12 +81,12 @@ async function getUuidFromDb(facebookId) {
                         'facebook_id': facebookId,
                         'session_id': newUuid
                     }
-                });
+                }).catch((e) => { console.log(e) });
                 return newUuid;
             }
             else return response.data[0].session_id;
         }
-    );
+    ).catch((e) => { console.log(e) });
 }
 
 module.exports = dialogflowApi;
