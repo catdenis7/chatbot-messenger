@@ -71,7 +71,7 @@ async function getUuidFromDb(facebookId) {
     let getUrl = process.env.APIURL + '/get/' + facebookId;
     let postUrl = process.env.APIURL + '/save';
     await axios.get(getUrl).then(
-        (response) => {
+        async (response) => {
             if (response.data.length == 0) {
                 let newUuid = idToUuid(facebookId);
                 await axios({
