@@ -12,8 +12,8 @@ let dialogflowApi = {
         }
         res.send(responseJson);
     },
-    async processText(input) {
-        return await runSample(input);
+    async processText(input,senderID) {
+        return await runSample(input, senderID);
     }
 }
 
