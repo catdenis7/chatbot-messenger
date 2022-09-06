@@ -1,16 +1,18 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const uuid = require('uuid');
+const axios = require('axios');
+
 let dialogflowApi = {
 
     async sendText(req, res) {
         let inputText = req.body.text;
         let response = await runSample(inputText);
         let responseJson = {
-            "data" : response
+            "data": response
         }
         res.send(responseJson);
     },
-    async processText(input){
+    async processText(input) {
         return await runSample(input);
     }
 }
@@ -18,7 +20,7 @@ let dialogflowApi = {
 async function runSample(inputText, senderID) {
     const rawKey = require('../apikey.json');
     let apikey = JSON.parse(JSON.stringify(rawKey));
-    let sessionId = idToUuid(senderID);
+    let sessionId = await getUuidFromDb(senderID);
     console.log(sessionId);
     //  Creando Sesion nueva
     const sessionClient = new dialogflow.SessionsClient({
@@ -63,6 +65,28 @@ function idToUuid(sessionId) {
         byteArray[i] = Number(sessionIDStr.charAt(i));
     }
     return uuid.v4(byteArray);
+}
+
+async function getUuidFromDb(facebookId) {
+    let getUrl = process.env.APIURL + '/get/' + facebookId;
+    let postUrl = process.env.APIURL + '/save';
+    await axios.get(getUrl).then(
+        (response) => {
+            if (response.data.length == 0) {
+                let newUuid = idToUuid(facebookId);
+                await axios({
+                    method: 'POST',
+                    url: postUrl,
+                    data: {
+                        'facebook_id': facebookId,
+                        'session_id': newUuid
+                    }
+                });
+                return newUuid;
+            }
+            else return response.data[0].session_id;
+        }
+    );
 }
 
 module.exports = dialogflowApi;
