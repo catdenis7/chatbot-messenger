@@ -12,7 +12,7 @@ let dialogflowApi = {
         }
         res.send(responseJson);
     },
-    async processText(input,senderID) {
+    async processText(input, senderID) {
         return await runSample(input, senderID);
     }
 }
@@ -71,24 +71,25 @@ async function getUuidFromDb(facebookId) {
     console.log("Facebook ID => " + facebookId);
     let getUrl = String(process.env.APIURL) + '/get/' + String(facebookId);
     let postUrl = String(process.env.APIURL) + '/save';
+    let uuid = 'ID MALA';
     await axios.get(getUrl).then(
         async (response) => {
             if (response.data.length == 0) {
-                let newUuid = idToUuid(facebookId);
-                console.log("UUID => " + newUuid);
+                uuid = idToUuid(facebookId);
                 await axios({
                     method: 'POST',
                     url: postUrl,
                     data: {
                         'facebook_id': facebookId,
-                        'session_id': newUuid
+                        'session_id': uuid
                     }
                 }).catch((e) => { console.error(e) });
-                return newUuid;
             }
-            else return response.data[0].session_id;
+            else uuid = response.data[0].session_id;
         }
     ).catch((e) => { console.error(e) });
+    console.log("UUID => " + uuid);
+    return uuid;
 }
 
 module.exports = dialogflowApi;
