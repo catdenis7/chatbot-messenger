@@ -68,12 +68,14 @@ function idToUuid(sessionId) {
 }
 
 async function getUuidFromDb(facebookId) {
+    console.log("Facebook ID => " + facebookId);
     let getUrl = String(process.env.APIURL) + '/get/' + String(facebookId);
     let postUrl = String(process.env.APIURL) + '/save';
     await axios.get(getUrl).then(
         async (response) => {
             if (response.data.length == 0) {
                 let newUuid = idToUuid(facebookId);
+                console.log("UUID => " + newUuid);
                 await axios({
                     method: 'POST',
                     url: postUrl,
@@ -81,12 +83,12 @@ async function getUuidFromDb(facebookId) {
                         'facebook_id': facebookId,
                         'session_id': newUuid
                     }
-                }).catch((e) => { console.log(e) });
+                }).catch((e) => { console.error(e) });
                 return newUuid;
             }
             else return response.data[0].session_id;
         }
-    ).catch((e) => { console.log(e) });
+    ).catch((e) => { console.error(e) });
 }
 
 module.exports = dialogflowApi;
