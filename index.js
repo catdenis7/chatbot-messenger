@@ -1,5 +1,6 @@
 var chatbot = require("./controller/chatbot");
 var dialogflowApi = require("./controller/dialogflow");
+var mongodbApi = require("./controller/mongodb");
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -23,4 +24,5 @@ app.post("/webhook", (req, res)=> chatbot.responseHandler(req, res));
 
 app.post("/dialogflow/send", async (req, res)  => dialogflowApi.sendText(req,res));
 
-
+//  MongoDB
+app.post("/mongodb/store", async (req, res) => mongodbApi.store(req,res));
