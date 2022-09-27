@@ -1,8 +1,19 @@
 var request = require("request");
-
 const { response } = require("express");
 const dialogflowApi = require("./dialogflow");
 const { json } = require("body-parser");
+const userData = require("./messenger")
+// mongoose 
+const mongoose = require('mongoose');
+
+
+ mongoose.connect(
+    'mongodb+srv://catherine:NZwwzX4iOozRi22g@prueba.ebl3elf.mongodb.net/?retryWrites=true&w=majority',
+    (err, res) => {
+        if (err) return console.log("Hubo un error en la base de datos ", err);
+        console.log("BASE DE DATOS ONLINE");
+      }
+    );
 
 let chatbot = {
     index(req, res) {
@@ -50,6 +61,7 @@ async function processEvent(event) {
     var message = event.message;
     console.log(JSON.stringify(event));
 
+    userData.saveUserData(senderID);
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
