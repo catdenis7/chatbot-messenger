@@ -11,8 +11,8 @@ async function saveUserData(facebookID) {
     let userData = await getUserData(facebookID);
     let prospect = new Prospect({
         facebookID,
-        facebookName: userData.firstName + userData.lastName,
-        profilePicture: userData.profilePicture,
+        facebookName: userData.first_name + userData.last_name,
+        profilePicture: userData.profile_picture,
     });
     prospect.save((err, res) => {
         if (err) return console.log(err);
@@ -40,9 +40,9 @@ async function getUserData(senderId) {
     } catch (err) {
       console.log("algo salio mal en axios getUserData: ", err);
       return {
-        firstName: "",
-        lastName: "",
-        profilePicture: "",
+        first_name: "",
+        last_name: "",
+        profile_picture: "",
       };
     }
   }
