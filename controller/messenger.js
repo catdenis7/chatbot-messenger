@@ -6,12 +6,13 @@ const { json } = require("body-parser");
 //mongodb models
 const Prospect = require('../Models/Prospect');
 
+
 async function saveUserData(facebookID) {
     let userData = await getUserData(facebookID);
     let prospect = new Prospect({
         facebookID,
         facebookName: userData.firstName + userData.lastName,
-        profilePicture: userData.profilePic,
+        profilePicture: userData.profilePicture,
     });
     prospect.save((err, res) => {
         if (err) return console.log(err);
