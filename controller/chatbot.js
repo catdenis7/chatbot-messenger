@@ -7,13 +7,13 @@ const userData = require("./messenger")
 const mongoose = require('mongoose');
 
 
- mongoose.connect(
-    'mongodb+srv://catherine:NZwwzX4iOozRi22g@prueba.ebl3elf.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(
+    'mongodb+srv://corlysvelaryon:test@mondongo-bot.zakwctm.mongodb.net/velaryon?retryWrites=true&w=majority',
     (err, res) => {
         if (err) return console.log("Hubo un error en la base de datos ", err);
         console.log("BASE DE DATOS ONLINE");
-      }
-    );
+    }
+);
 
 let chatbot = {
     index(req, res) {
@@ -39,9 +39,9 @@ let chatbot = {
         // Verificar si el evento proviene del pagina asociada
         if (req.body.object == "page") {
             // Si existe multiples entradas entradas
-            req.body.entry.forEach(function(entry) {
+            req.body.entry.forEach(function (entry) {
                 // Iterara todos lo eventos capturados
-                entry.messaging.forEach(async function(event) {
+                entry.messaging.forEach(async function (event) {
                     if (event.message) {
                         await processEvent(event);
                     }
@@ -65,7 +65,7 @@ async function processEvent(event) {
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
-        let dialogFlowResponse = await dialogflowApi.processText(message.text,senderID);
+        let dialogFlowResponse = await dialogflowApi.processText(message.text, senderID);
         var response = {
             text: dialogFlowResponse,
         };
