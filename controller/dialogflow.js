@@ -13,12 +13,15 @@ let dialogflowApi = {
         }
         res.send(responseJson);
     },
-    async processText(input, senderID) {
-        return await runSample(input, senderID);
+    async processText(input, senderID, source) {
+        return await runSample(input, senderID, source);
+    },
+    async getUuid(facebookID){
+        return await getUuidFromDb(facebookID);
     }
 }
 
-async function runSample(inputText, senderID) {
+async function runSample(inputText, senderID, source) {
     const rawKey = require('../apikey.json');
     let apikey = JSON.parse(JSON.stringify(rawKey));
     let sessionId = await getUuidFromDb(senderID);
@@ -52,6 +55,27 @@ async function runSample(inputText, senderID) {
     const responses = await sessionClient.detectIntent(request);
     console.log('Detected intent');
     const result = responses[0].queryResult;
+    /*
+    console.log("INTENT EMPAREJADO: ", result.intent.displayName);
+    let defaultResponses = [];
+    if (result.action !== "input.unknown") {
+        result.fulfillmentMessages.forEach((element) => {
+            if (element.platform == source) {
+                defaultResponses.push(element);
+            }
+        });
+    }
+    if (defaultResponses.length == 0) {
+        result.fulfillmentMessages.forEach((element) => {
+            if(element.plaform == "PLATFORM_UNSPECIFIED"){
+                defaultResponses.push(element);
+            }
+        });
+    }
+    result.fulfillmentMessages = defaultResponses;
+    return result;
+    */
+
     if (result.intent) {
         return result.fulfillmentText;
     } else {
@@ -88,7 +112,7 @@ async function getUuidFromDb(facebookId) {
             }
             else uuid = response.data[0].session_id;
         }
-    ).catch((e) => { console.error(e) });
+    ).catch((e) => { console.error("NO SE PUDO SINCRONIZAR") });
     console.log("UUID => " + uuid);
     return uuid;
 }

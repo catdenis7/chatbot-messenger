@@ -2,7 +2,7 @@ var request = require("request");
 const { response } = require("express");
 const dialogflowApi = require("./dialogflow");
 const { json } = require("body-parser");
-const userData = require("./messenger")
+const messenger = require("./messenger");
 // mongoose 
 const mongoose = require('mongoose');
 
@@ -61,11 +61,13 @@ async function processEvent(event) {
     var message = event.message;
     console.log(JSON.stringify(event));
 
-    userData.saveUserData(senderID);
+    messenger.saveUserData(senderID);
     // Si en el evento existe un mensaje de tipo texto
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
         let dialogFlowResponse = await dialogflowApi.processText(message.text, senderID);
+        //console.log("MENSAJE DEL USUARIO: ", message.text);
+       // await messenger.sendToDialogFlow(senderID, message.text);
         var response = {
             text: dialogFlowResponse,
         };
