@@ -5,7 +5,7 @@ const AlbumSchema = new Schema({
   name: String,
   artist: String,
   presentation: String,
-  date: date,
+  date: Date,
 },{timestamps: true}
 );
 
