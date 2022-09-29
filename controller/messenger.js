@@ -18,7 +18,7 @@ async function saveUserData(facebookID) {
 
     let prospect = Prospect;
 
-    prospect.findOneAndUpdate(
+    let result = await prospect.findOneAndUpdate(
         {
             "facebookID": facebookID
         },
@@ -32,7 +32,7 @@ async function saveUserData(facebookID) {
         }
     );
 
-    await prospect.save((err, res) => {
+    result.save((err, res) => {
         if (err) return console.log(err);
         console.log("Se creo un usuario:", res);
     });
