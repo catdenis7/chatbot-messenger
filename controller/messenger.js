@@ -6,7 +6,8 @@ const axios = require("axios");
 const { json } = require("body-parser");
 //mongodb models
 const mongoose = require('mongoose');
-const Prospect = require('../Models/Prospect');
+
+const prospectService = require('../Service/ProspectService')
 
 
 async function saveUserData(facebookID) {
@@ -16,9 +17,7 @@ async function saveUserData(facebookID) {
     if (userData.first_name == null)
         return;
 
-    let prospect = Prospect;
-
-    let result = await prospect.findOneAndUpdate(
+    let result = await prospectService.upsert(
         {
             "facebookID": facebookID
         },
@@ -26,16 +25,8 @@ async function saveUserData(facebookID) {
             "facebookName": userData.first_name + " " + userData.last_name,
             "profilePicture": userData.profile_pic,
         },
-        {
-            upsert: true,
-            new: true,
-        }
     );
-
-    result.save((err, res) => {
-        if (err) return console.log(err);
-        console.log("Se creo un usuario:", res);
-    });
+    console.log("Se creo el usuerio", result);
 }
 
 module.exports = {
