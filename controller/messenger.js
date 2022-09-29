@@ -12,16 +12,27 @@ const Prospect = require('../Models/Prospect');
 async function saveUserData(facebookID) {
     let userData = await getUserData(facebookID);
     console.log(JSON.stringify(userData));
-    
-    if(userData.first_name == null) 
-      return;
 
-    let prospect = new Prospect();
-    prospect.facebookID = facebookID,
-    prospect.facebookName = userData.first_name + " " +userData.last_name;
-    prospect.profilePicture = userData.profile_pic;
-    
-    prospect.save((err, res) => {
+    if (userData.first_name == null)
+        return;
+
+    let prospect = Prospect;
+
+    prospect.findOneAndUpdate(
+        {
+            "facebookID": facebookID
+        },
+        {
+            "facebookName": userData.first_name + " " + userData.last_name,
+            "profilePicture": userData.profile_pic,
+        },
+        {
+            upsert: true,
+            new: true,
+        }
+    );
+
+    await prospect.save((err, res) => {
         if (err) return console.log(err);
         console.log("Se creo un usuario:", res);
     });
@@ -35,21 +46,21 @@ async function getUserData(senderId) {
     console.log("consiguiendo datos del usuario...");
     let access_token = process.env.PAGE_ACCESS_TOKEN;
     try {
-      let userData = await axios.get(
-        "https://graph.facebook.com/v6.0/" + senderId,
-        {
-          params: {
-            access_token,
-          },
-        }
-      );
-      return userData.data;
+        let userData = await axios.get(
+            "https://graph.facebook.com/v6.0/" + senderId,
+            {
+                params: {
+                    access_token,
+                },
+            }
+        );
+        return userData.data;
     } catch (err) {
-      console.log("algo salio mal en axios getUserData: ", err);
-      return {
-        first_name: "",
-        last_name: "",
-        profile_picture: "",
-      };
+        console.log("algo salio mal en axios getUserData: ", err);
+        return {
+            first_name: "",
+            last_name: "",
+            profile_picture: "",
+        };
     }
-  }
+}
