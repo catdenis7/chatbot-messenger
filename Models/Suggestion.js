@@ -12,4 +12,4 @@ const SugestionSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Sugestion", SugestionSchema);
+module.exports = mongoose.model("Suggestion", SugestionSchema);
