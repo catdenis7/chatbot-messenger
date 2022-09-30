@@ -35,9 +35,9 @@ let messenger = {
     async sendToDialogFlow(senderID, messageText) {
         try {
           let result;
-          //setSessionAndUser(senderID);
-          //let session = sessionIDs.get(senderID);         
-          result = await dialogflowApi.processText(messageText, senderID, "FACEBOOK");
+          setSessionAndUser(senderID);
+          let session = sessionIDs.get(senderID);         
+          result = await dialogflowApi.processText(messageText, session, "FACEBOOK");
           handleDialogFlowResponse(senderID, result);
         }
         catch (error) {
@@ -57,11 +57,6 @@ async function setSessionAndUser(senderId) {
       throw error;
     }
   }
-/*
-module.exports = {
-    "saveUserData": saveUserData
-}
-*/
 
 async function getUserData(senderId) {
     console.log("consiguiendo datos del usuario...");
@@ -86,11 +81,6 @@ async function getUserData(senderId) {
     }
 }
 
-/*
-module.exports = {
-    "sendToDialogFlow": sendToDialogFlow
-}
-*/
 function isDefined(obj) {
     if (typeof obj == "undefined") {
       return false;
@@ -105,15 +95,21 @@ function isDefined(obj) {
 
 function handleDialogFlowResponse(sender, response) {
     let responseText = response.fulfillmentText;
-    return sendTextMessage(sender, responseText);
+    //return sendTextMessage(sender, responseText);
     let messages = response.fulfillmentMessages;
     let action = response.action;
     let contexts = response.outputContexts;
     let parameters = response.parameters;
-  
+
+    console.log("RESPONSETEXT =>" + isDefined(responseText) + " TEXTO: "+ JSON.stringify(responseText));
+    console.log("MESSAGE =>" + isDefined(messages) +  " TEXTO: "+ JSON.stringify(messages));
+    console.log("ACTION =>" + isDefined(action));
+    console.log("CONTEXTS =>" + isDefined(contexts)); 
+    console.log("PARAMETERS =>" + isDefined(parameters)); 
+
     if (isDefined(action)) {
-      handleDialogFlowAction(sender, action, messages, contexts, parameters);
-    } else if (isDefined(messages)) {
+      handleDialogFlowAction(sender, response);
+    } else if ((messages.length > 0)) {
       handleMessages(messages, sender);
     } else if (responseText == "" && !isDefined(action)) {
       //dialogflow no entiende la respuesta
@@ -123,15 +119,18 @@ function handleDialogFlowResponse(sender, response) {
     }
   }
 
-  async function handleDialogFlowAction(sender, action, messages, contexts, parameters){
-    switch (action) {
+  async function handleDialogFlowAction(sender, response){
+    switch (response.action) {
         case "Estado2.Informacion.action":
-            console.log(parameters);
+            console.log(response.parameters);
+            sendTextMessage(sender, response.fulfillmentText);
             break;
+        default: break;
     }
   }
 
   async function handleMessages(messages, sender) {
+    console.log("HANDLE MESSAGE 1 => "+ JSON.stringify(messages));
     try {
       let i = 0;
       let cards = [];
@@ -170,6 +169,7 @@ function handleDialogFlowResponse(sender, response) {
   }
 
   async function handleMessage(message, sender) {
+    console.log("HANDLE MESSAGE 2=> "+ JSON.stringify(message));
     switch (message.message) {
       case "text": // text
         for (const text of message.text.text) {

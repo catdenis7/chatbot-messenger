@@ -63,14 +63,16 @@ async function processEvent(event) {
 
     messenger.saveUserData(senderID);
     // Si en el evento existe un mensaje de tipo texto
+    if (senderID == "110434878458920") return;
     if (message.text) {
         // Crear un payload para un simple mensaje de texto
         //let dialogFlowResponse = await dialogflowApi.processText(message.text, senderID);
         console.log("MENSAJE DEL USUARIO: ", message.text);
         await messenger.sendToDialogFlow(senderID, message.text);
-        var response = {
+       /* var response = {
             text: dialogFlowResponse,
         };
+        */
     }
 
     // Enviamos el mensaje mediante SendAPI
