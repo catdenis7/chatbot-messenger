@@ -24,8 +24,8 @@ let dialogflowApi = {
 async function runSample(inputText, senderID, source) {
     const rawKey = require('../apikey.json');
     let apikey = JSON.parse(JSON.stringify(rawKey));
-    let sessionId = await getUuidFromDb(senderID);
-    console.log(sessionId);
+    //let sessionId = await getUuidFromDb(senderID);
+    //console.log(sessionId);
     //  Creando Sesion nueva
     const sessionClient = new dialogflow.SessionsClient({
         projectId: apikey.project_id,
@@ -34,10 +34,12 @@ async function runSample(inputText, senderID, source) {
             private_key: apikey.private_key
         }
     });
+
     const sessionPath = sessionClient.projectAgentSessionPath(
         apikey.project_id,
-        sessionId
+        senderID
     );
+    
     // Petición para mandar a la API.
     const request = {
         session: sessionPath,
@@ -55,7 +57,7 @@ async function runSample(inputText, senderID, source) {
     const responses = await sessionClient.detectIntent(request);
     console.log('Detected intent');
     const result = responses[0].queryResult;
-    /*
+
     console.log("INTENT EMPAREJADO: ", result.intent.displayName);
     let defaultResponses = [];
     if (result.action !== "input.unknown") {
@@ -74,7 +76,7 @@ async function runSample(inputText, senderID, source) {
     }
     result.fulfillmentMessages = defaultResponses;
     return result;
-    */
+
 
     if (result.intent) {
         return result.fulfillmentText;

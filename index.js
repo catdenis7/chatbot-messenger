@@ -51,6 +51,7 @@ app.post("/album", (req, res) => {
     });
 });
 
+/*
 app.post("/exists", async (req, res) => {
 
     let body = req.body;
@@ -89,3 +90,4 @@ app.post("/exists", async (req, res) => {
 
     res.send(rawResponse);
 });
+*/
