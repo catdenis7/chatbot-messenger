@@ -1,7 +1,6 @@
 const dialogflow = require('@google-cloud/dialogflow');
 var request = require("request");
 const { response } = require("express");
-const dialogflowApi = require("./DialogflowController");
 const axios = require("axios");
 const { json } = require("body-parser");
 const uuid = require('uuid');
@@ -73,11 +72,11 @@ let messengerRespository = {
         let parameters = response.parameters;
 
         console.log("RESPONSE =>" + JSON.stringify(response));
-        console.log("RESPONSETEXT =>" + this.sDefined(responseText) + " TEXTO: " + JSON.stringify(responseText));
-        console.log("MESSAGE =>" + this.sDefined(messages) + " TEXTO: " + JSON.stringify(messages));
-        console.log("ACTION =>" + this.sDefined(action));
-        console.log("CONTEXTS =>" + this.sDefined(contexts));
-        console.log("PARAMETERS =>" + this.sDefined(parameters));
+        console.log("RESPONSETEXT =>" + this.isDefined(responseText) + " TEXTO: " + JSON.stringify(responseText));
+        console.log("MESSAGE =>" + this.isDefined(messages) + " TEXTO: " + JSON.stringify(messages));
+        console.log("ACTION =>" + this.isDefined(action));
+        console.log("CONTEXTS =>" + this.isDefined(contexts));
+        console.log("PARAMETERS =>" + this.isDefined(parameters));
 
         if (this.isDefined(action)) {
             this.handleDialogFlowAction(sender, response);
