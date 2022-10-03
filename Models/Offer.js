@@ -5,7 +5,8 @@ const OfferSchema = new Schema(
   {
     discount: Number,
     date: Date,
-    session: {type: Schema.ObjectId, ref: "Price"}
+    status: Boolean,
+    price: {type: Schema.ObjectId, ref: "Price"}
   },
   { timestamps: true }
 );

@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const PresentationSchema = new Schema(
   {
     type: String,
-    session: {type: Schema.ObjectId, ref: "Album"}
   },
   { timestamps: true }
 );

@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const SaleSchema = new Schema(
   {
     client: {type: Schema.ObjectId, ref: "Client"},
-    album: {type: Schema.ObjectId, ref: "Album"},
+    product: {type: Schema.ObjectId, ref: "Product"},
   },
   { timestamps: true }
 );

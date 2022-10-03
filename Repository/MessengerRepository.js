@@ -5,12 +5,17 @@ const axios = require("axios");
 const { json } = require("body-parser");
 const uuid = require('uuid');
 const utils = require('../Utils/Utils')
-    //mongodb models
-const mongoose = require('mongoose');
+
 
 const prospectService = require('../Service/ProspectService')
-
+//mongodb models
+const mongoose = require('mongoose');
 const Album = require("../Models/Album");
+const Product = require("../Models/Product");
+const Presentation = require("../Models/Presentation");
+const Price = require("../Models/Price");
+const Offer = require("../Models/Offer");
+
 const sessionIDs = new Map();
 
 let messengerRespository = {
@@ -65,7 +70,6 @@ let messengerRespository = {
 
     handleDialogFlowResponse(sender, response) {
         let responseText = response.fulfillmentText;
-        //return sendTextMessage(sender, responseText);
         let messages = response.fulfillmentMessages;
         let action = response.action;
         let contexts = response.outputContexts;
@@ -106,13 +110,59 @@ let messengerRespository = {
                     }
 
                     let album = Album;
-                    let result = await album.findOne(queryBody);
+                    let product = Product;
+                    let presentation = Presentation;
+                    let price = Price;
+                    let offer = Offer;
+                    let itemPrice;
 
-                    let itemExists = result != null;
+                    let albumInfo = await album.findOne({$_id:product.album});
+                    console.log("ALBUM INFO => "+ albumInfo)
+                    
+                    let presentationInfo = await presentation.findOne({$_id:product.presentation});
+                    console.log("PRESENTACION INFO => "+ presentationInfo);
 
-                    response.fulfillmentText = itemExists ? "Si lo tenemos disponible ¿deseas realizar un pedido?" : "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄";
-                }
-                this.sendTextMessage(sender, response.fulfillmentText);
+                    let priceInfo = await price.findOne({$product:product.$_id});
+                    console.log("PRICE INFO => "+ priceInfo);
+
+                    let nameCheck = albumInfo.name == queryBody.name;
+                    console.log("NAMECHECK => " + nameCheck);
+                    let artistCheck = albumInfo.artist == queryBody.artist;
+                    console.log("ARTISTCHECK => " + artistCheck);
+                    let presentationCheck = presentationInfo.type == queryBody.presentation;
+                    console.log("PRESENTATIONCHECK => " + presentationCheck);
+
+                    if (priceInfo.status) {
+                        itemPrice = priceInfo.standardPrice;
+                    } else {
+                        let offerInfo = await offer.findOne({$price: price.$_id});
+                        console.log("OFFER INFO => "+ offerInfo);
+                        if (offerInfo.status){
+                            itemPrice = priceInfo.standardPrice * (offerInfo.discount/100);
+                        } else {
+                            console.log("ERROR: VERIFICAR STATUS DE PRICE Y OFFER");
+                        }
+                    }
+
+                    let itemExists = nameCheck && artistCheck && presentationCheck;
+                    console.log("RESPUESTA DEL RESULT =>" + itemExists);
+                    if (itemExists) {
+                        let productInfo = await product.findOne({$album: album.$_id});
+                        console.log("PRODUCT INFO => " +productInfo);
+                        await this.sendGenericMessage(sender, [
+                            {
+                                title: albumInfo.name + " - " + albumInfo.artist,
+                                image_url: productInfo.image,
+                                subtitle: "Formato: " + presentationInfo.type + "\n" + "Bs. " + itemPrice,
+                            },
+                        ]);
+                        await this.sendTextMessage(sender,"Si lo tenemos disponible ¿deseas realizar un pedido?");
+                    } else {
+                        await this.sendTextMessage(sender,"Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
+                    }
+                } else {
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                }            
                 break;
             default:
                 break;

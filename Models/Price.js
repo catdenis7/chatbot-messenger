@@ -6,7 +6,7 @@ const PriceSchema = new Schema(
     standardPrice: Number,
     description: String,
     status: Boolean,
-    presentation: {type: Schema.ObjectId, ref: "Presentation"}
+    product: {type: Schema.ObjectId, ref: "Product"}
   },
   { timestamps: true }
 );

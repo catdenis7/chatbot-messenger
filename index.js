@@ -6,6 +6,10 @@ var bodyParser = require("body-parser");
 
 // Tablas MongoDB
 const Album = require("./Models/Album");
+const Product = require("./Models/Product");
+const Presentation = require("./Models/Presentation");
+const Price = require("./Models/Price");
+const Offer = require("./Models/Offer");
 
 var app = express();
 
@@ -34,7 +38,6 @@ app.post("/album", (req, res) => {
     let album = new Album({
         name: body.name,
         artist: body.artist,
-        presentation: body.presentation,
         date: body.date,
     });
     album.save((err, albumDB) => {
@@ -47,6 +50,73 @@ app.post("/album", (req, res) => {
     });
 });
 
+app.post("/product", (req, res) => {
+    let body = req.body;
+    let product = new Product({
+        image: body.image,
+        album: body.album,
+        presentation: body.presentation,
+    });
+    product.save((err, productDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Producto creado correctamente",
+            product: productDB,
+        });
+    });
+});
+
+app.post("/presentation", (req, res) => {
+    let body = req.body;
+    let presentation = new Presentation({
+        type: body.type,
+    });
+    presentation.save((err, presentationDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Presentacion creado correctamente",
+            presentation: presentationDB,
+        });
+    });
+});
+
+app.post("/price", (req, res) => {
+    let body = req.body;
+    let price = new Price({
+        standardPrice: body.standardPrice,
+        description: body.description,
+        status: body.status,
+        product: body.product,
+    });
+    price.save((err, priceDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Price creado correctamente",
+            price: priceDB,
+        });
+    });
+});
+
+app.post("/offer", (req, res) => {
+    let body = req.body;
+    let offer = new Offer({
+        discount: body.discount,
+        date: body.date,
+        status: body.status,
+        price: body.price,
+    });
+    offer.save((err, offerDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Offer creado correctamente",
+            price: offerDB,
+        });
+    });
+});
 /*
 app.post("/exists", async (req, res) => {
 
