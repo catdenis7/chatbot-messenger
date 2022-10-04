@@ -28,6 +28,7 @@ let messenger = {
         try {
             let result;
             setSessionAndUser(senderID);
+            console.log("SOY EL SENDERID UWWWWWWWWWWU =====> " +senderID);
             let session = sessionIDs.get(senderID);
             result = await dialogflowApi.processText(messageText, session, "FACEBOOK");
             handleDialogFlowResponse(senderID, result);

@@ -5,9 +5,9 @@ const axios = require("axios");
 const { json } = require("body-parser");
 const uuid = require('uuid');
 const utils = require('../Utils/Utils')
-
-
-const prospectService = require('../Service/ProspectService')
+// Services
+const prospectService = require('../Service/ProspectService');
+const sessionService = require("../Service/SessionService");
 //mongodb models
 const mongoose = require('mongoose');
 const Album = require("../Models/Album");
@@ -15,8 +15,10 @@ const Product = require("../Models/Product");
 const Presentation = require("../Models/Presentation");
 const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
+const Prospect = require("../Models/Prospect");
 
 const sessionIDs = new Map();
+let startDate;
 
 let messengerRespository = {
 
@@ -28,6 +30,7 @@ let messengerRespository = {
         try {
             if (!sessionIDs.has(senderId)) {
                 sessionIDs.set(senderId, uuid.v1());
+                startDate = Date.now();
             }
         } catch (error) {
             throw error;
@@ -117,26 +120,26 @@ let messengerRespository = {
                     let itemPrice;
 
                     let albumInfo = await album.findOne({$_id:product.album});
-                    console.log("ALBUM INFO => "+ albumInfo)
+                    //console.log("ALBUM INFO => "+ albumInfo)
                     
                     let presentationInfo = await presentation.findOne({$_id:product.presentation});
-                    console.log("PRESENTACION INFO => "+ presentationInfo);
+                    //console.log("PRESENTACION INFO => "+ presentationInfo);
 
                     let priceInfo = await price.findOne({$product:product.$_id});
-                    console.log("PRICE INFO => "+ priceInfo);
+                    //console.log("PRICE INFO => "+ priceInfo);
 
                     let nameCheck = albumInfo.name == queryBody.name;
-                    console.log("NAMECHECK => " + nameCheck);
+                    //console.log("NAMECHECK => " + nameCheck);
                     let artistCheck = albumInfo.artist == queryBody.artist;
-                    console.log("ARTISTCHECK => " + artistCheck);
+                    //console.log("ARTISTCHECK => " + artistCheck);
                     let presentationCheck = presentationInfo.type == queryBody.presentation;
-                    console.log("PRESENTATIONCHECK => " + presentationCheck);
+                    //console.log("PRESENTATIONCHECK => " + presentationCheck);
 
                     if (priceInfo.status) {
                         itemPrice = priceInfo.standardPrice;
                     } else {
                         let offerInfo = await offer.findOne({$price: price.$_id});
-                        console.log("OFFER INFO => "+ offerInfo);
+                        //console.log("OFFER INFO => "+ offerInfo);
                         if (offerInfo.status){
                             itemPrice = priceInfo.standardPrice * (offerInfo.discount/100);
                         } else {
@@ -145,10 +148,10 @@ let messengerRespository = {
                     }
 
                     let itemExists = nameCheck && artistCheck && presentationCheck;
-                    console.log("RESPUESTA DEL RESULT =>" + itemExists);
+                    //console.log("RESPUESTA DEL RESULT =>" + itemExists);
                     if (itemExists) {
                         let productInfo = await product.findOne({$album: album.$_id});
-                        console.log("PRODUCT INFO => " +productInfo);
+                        //console.log("PRODUCT INFO => " +productInfo);
                         await this.sendGenericMessage(sender, [
                             {
                                 title: albumInfo.name + " - " + albumInfo.artist,
@@ -164,6 +167,78 @@ let messengerRespository = {
                     this.sendTextMessage(sender, response.fulfillmentText);
                 }            
                 break;
+                case "EstadoV1.ValoracionCompra.action":
+                    //console.log(response.parameters);
+                    if (response.allRequiredParamsPresent){
+                        let queryBody = {
+                            "number": response["parameters"]["fields"]["number"]["numberValue"],
+                        }
+                        let prospect = Prospect;
+    
+                        let prospectInfo = await prospect.findOne({$facebookID:sender});
+                        //console.log("sessionID => "+ sessionIDs.get(sender));
+                        //console.log("score => "+ queryBody.number);
+                        //console.log("startDate => "+ startDate);
+                        //console.log("endDate => "+ Date.now);
+                        //console.log("prospect => "+ prospectInfo._id);
+                        sessionService.insert({
+                            sessionID: sessionIDs.get(sender),
+                            score: queryBody.number,
+                            startDate: startDate,
+                            endDate: Date.now(),
+                            prospect: prospectInfo._id,
+                        });
+                        console.log("SI FUNCA V1");
+                    }
+                    break;
+                case "EstadoV2.ValoracionNoCompra.action":
+                    //console.log(response.parameters);
+                    if (response.allRequiredParamsPresent){
+                        let queryBody = {
+                            "number": response["parameters"]["fields"]["number"]["numberValue"],
+                        }
+                        let prospect = Prospect;
+    
+                        let prospectInfo = await prospect.findOne({$facebookID:sender});
+                        //console.log("sessionID => "+ sessionIDs.get(sender));
+                        //console.log("score => "+ queryBody.number);
+                        //console.log("startDate => "+ startDate);
+                        //console.log("endDate => "+ Date.now);
+                        //console.log("prospect => "+ prospectInfo._id);
+                        sessionService.insert({
+                            sessionID: sessionIDs.get(sender),
+                            score: queryBody.number,
+                            startDate: startDate,
+                            endDate: Date.now(),
+                            prospect: prospectInfo._id,
+                        });
+                        console.log("SI FUNCA V2");
+                    }
+                    break;
+                    case "EstadoV3.MostrarPromos.action":
+                        //console.log(response.parameters);
+                        if (response.allRequiredParamsPresent){
+                            let queryBody = {
+                                "number": response["parameters"]["fields"]["number"]["numberValue"],
+                            }
+                            let prospect = Prospect;
+        
+                            let prospectInfo = await prospect.findOne({$facebookID:sender});
+                            //console.log("sessionID => "+ sessionIDs.get(sender));
+                            //console.log("score => "+ queryBody.number);
+                            //console.log("startDate => "+ startDate);
+                            //console.log("endDate => "+ Date.now);
+                            //console.log("prospect => "+ prospectInfo._id);
+                            sessionService.insert({
+                                sessionID: sessionIDs.get(sender),
+                                score: queryBody.number,
+                                startDate: startDate,
+                                endDate: Date.now(),
+                                prospect: prospectInfo._id,
+                            });
+                            console.log("SI FUNCA V3");
+                        }
+                        break;
             default:
                 break;
         }

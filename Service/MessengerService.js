@@ -25,6 +25,7 @@ let messengerService = {
         try {
             let result;
             messengerRespository.setSessionAndUser(senderID);
+            console.log("SOY EL VERDADERO SENDERID =====>"+ senderID);
             let session = messengerRespository.getSessionIDs(senderID);
             result = await dialogflowService.processText(messageText, session, "FACEBOOK");
             messengerRespository.handleDialogFlowResponse(senderID, result);
