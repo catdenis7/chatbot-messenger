@@ -205,12 +205,9 @@ let messengerRespository = {
                         //console.log("startDate => "+ startDate);
                         //console.log("endDate => "+ Date.now);
                         //console.log("prospect => "+ prospectInfo._id);
-                        sessionService.insert({
-                            sessionID: sessionIDs.get(sender),
+                        sessionService.upsert({sessionID: sessionIDs.get(sender)},{
                             score: queryBody.number,
-                            startDate: startDate,
                             endDate: Date.now(),
-                            prospect: prospectInfo._id,
                         });
                         console.log("SI FUNCA V1");
                         this.sendTextMessage(sender, response.fulfillmentText);
@@ -232,12 +229,9 @@ let messengerRespository = {
                         //console.log("startDate => "+ startDate);
                         //console.log("endDate => "+ Date.now);
                         //console.log("prospect => "+ prospectInfo._id);
-                        sessionService.insert({
-                            sessionID: sessionIDs.get(sender),
+                        sessionService.upsert({sessionID: sessionIDs.get(sender)},{
                             score: queryBody.number,
-                            startDate: startDate,
                             endDate: Date.now(),
-                            prospect: prospectInfo._id,
                         });
                         console.log("SI FUNCA V2");
                     }else {
@@ -258,12 +252,9 @@ let messengerRespository = {
                             //console.log("startDate => "+ startDate);
                             //console.log("endDate => "+ Date.now);
                             //console.log("prospect => "+ prospectInfo._id);
-                            sessionService.insert({
-                                sessionID: sessionIDs.get(sender),
+                            sessionService.upsert({sessionID: sessionIDs.get(sender)},{
                                 score: queryBody.number,
-                                startDate: startDate,
                                 endDate: Date.now(),
-                                prospect: prospectInfo._id,
                             });
                             console.log("SI FUNCA V3");
                         }else {

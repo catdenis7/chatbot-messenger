@@ -3,7 +3,7 @@ const dialogflowService = require("../Service/DialogflowService");
 const prospectService = require('../Service/ProspectService')
 
 let messengerRespository = require('../Repository/MessengerRepository');
-const { default: sessionService } = require("./SessionService.js");
+const sessionService = require("./SessionService.js");
 const { default: sessionRepository }=require("../Repository/SessionRepository.js");
 
 let messengerService = {
@@ -23,7 +23,7 @@ let messengerService = {
 
         let sessionId = messengerRespository.getSessionIDs(facebookID);
 
-        let isNewSession = sessionService.find({ sessionID: sessionId }) == null;
+        let isNewSession = await sessionService.find({ sessionID: sessionId }) == null;
 
         if (isNewSession) {    
             let newSessionResult = await sessionService.insert(
@@ -49,7 +49,7 @@ let messengerService = {
             result = await dialogflowService.processText(messageText, session, "FACEBOOK");
             messengerRespository.handleDialogFlowResponse(senderID, result);
             let sessionUpdate = await sessionService.upsert({ sessionID : session}, {
-                payload : result,
+                payload : JSON.stringify(result),
                 endDate : Date.now()
             });
 
