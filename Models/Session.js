@@ -8,6 +8,7 @@ const SessionSchema = new Schema(
     score: Number,
     startDate: Date,
     endDate: Date,
+    payload: String,
     prospect: {type: Schema.ObjectId, ref: "Prospect"}
   },
   { timestamps: true }
