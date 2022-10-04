@@ -102,13 +102,16 @@ let messengerRespository = {
         switch (response.action) {
             case "Estado4.DatosCliente.action":
                 console.log("PARAMETERS => ");
-                console.log(response[parameters]);
+                console.log(JSON.stringify(response[parameters]));
 
                 if(!response.allRequiredParamsPresent)
+                {
                     this.sendTextMessage(sender, response.fulfillmentText);
+                    break;
+                }
 
                 let queryBody = {
-                    "name": response["parameters"]["fields"]["person"]["name"]["stringValue"],
+                    "name": response["parameters"]["fields"]["person"]["structValue"]["fields"]["name"]["stringValue"],
                     "lastName": response["parameters"]["fields"]["apellido"]["stringValue"],
                     "phoneNumber": response["parameters"]["fields"]["phone-number"]["stringValue"],
                     "email": response["parameters"]["fields"]["email"]["stringValue"]
