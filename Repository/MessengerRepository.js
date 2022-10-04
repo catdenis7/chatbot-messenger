@@ -121,7 +121,7 @@ let messengerRespository = {
                 }
 
                 let result = await clientService.insert(prospectQuery,queryBody);
-            
+                this.sendTextMessage(sender, response.fulfillmentText);
             break;
             case "Estado2.Informacion.action":
                 console.log(response.parameters);
@@ -213,6 +213,9 @@ let messengerRespository = {
                             prospect: prospectInfo._id,
                         });
                         console.log("SI FUNCA V1");
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    } else {
+                        this.sendTextMessage(sender, response.fulfillmentText);
                     }
                     break;
                 case "EstadoV2.ValoracionNoCompra.action":
@@ -237,6 +240,8 @@ let messengerRespository = {
                             prospect: prospectInfo._id,
                         });
                         console.log("SI FUNCA V2");
+                    }else {
+                        this.sendTextMessage(sender, response.fulfillmentText);
                     }
                     break;
                     case "EstadoV3.MostrarPromos.action":
@@ -261,6 +266,8 @@ let messengerRespository = {
                                 prospect: prospectInfo._id,
                             });
                             console.log("SI FUNCA V3");
+                        }else {
+                            this.sendTextMessage(sender, response.fulfillmentText);
                         }
                         break;
             default:
