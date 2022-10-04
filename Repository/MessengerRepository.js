@@ -102,7 +102,7 @@ let messengerRespository = {
         switch (response.action) {
             case "Estado4.DatosCliente.action":
                 console.log("PARAMETERS => ");
-                console.log(JSON.stringify(response[parameters]));
+                console.log(JSON.stringify(response.parameters));
 
                 if(!response.allRequiredParamsPresent)
                 {
