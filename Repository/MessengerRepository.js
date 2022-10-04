@@ -8,6 +8,7 @@ const utils = require('../Utils/Utils')
 // Services
 const prospectService = require('../Service/ProspectService');
 const sessionService = require("../Service/SessionService");
+const clientService = require("../Service/ClientService");
 //mongodb models
 const mongoose = require('mongoose');
 const Album = require("../Models/Album");
@@ -99,6 +100,26 @@ let messengerRespository = {
 
     async handleDialogFlowAction(sender, response) {
         switch (response.action) {
+            case "Estado4.DatosCliente.action":
+                console.log("PARAMETERS => ");
+                console.log(response[parameters]);
+
+                if(!response.allRequiredParamsPresent)
+                    this.sendTextMessage(sender, response.fulfillmentText);
+
+                let queryBody = {
+                    "name": response["parameters"]["fields"]["person"]["name"]["stringValue"],
+                    "lastName": response["parameters"]["fields"]["apellido"]["stringValue"],
+                    "phoneNumber": response["parameters"]["fields"]["phone-number"]["stringValue"],
+                    "email": response["parameters"]["fields"]["email"]["stringValue"]
+                }
+                let prospectQuery = { 
+                    "facebookID" : sender
+                }
+
+                let result = await clientService.insert(prospectQuery,queryBody);
+            
+            break;
             case "Estado2.Informacion.action":
                 console.log(response.parameters);
                 if (response.allRequiredParamsPresent) {
