@@ -9,7 +9,9 @@ const SessionSchema = new Schema(
     startDate: Date,
     endDate: Date,
     payload: String,
-    prospect: {type: Schema.ObjectId, ref: "Prospect"}
+    prospect: {type: Schema.ObjectId, ref: "Prospect"},
+    suggestion: {type: Schema.ObjectId, ref: "Suggestion"},
+    entry: {type: Schema.ObjectId, ref: "Entry"},
   },
   { timestamps: true }
 );

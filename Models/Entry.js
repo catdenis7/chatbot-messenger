@@ -5,7 +5,8 @@ const EntrySchema = new Schema(
   {
     date: Date,
     product : {type: Schema.ObjectId, ref: "Product"},
-    prospect : {type: Schema.ObjectId, ref: "Prospect"}
+    session : {type: Schema.ObjectId, ref: "Session"},
+    suggestion: {type: Schema.ObjectId, ref: "Suggestion"},
   },
   { timestamps: true }
 );

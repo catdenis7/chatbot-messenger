@@ -18,6 +18,7 @@ const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
 const Prospect = require("../Models/Prospect");
 const entryService = require('../Service/EntryService.js');
+const { default: entryRepository }=require('./EntryRepository.js');
 
 const sessionIDs = new Map();
 let startDate;
@@ -175,7 +176,7 @@ let messengerRespository = {
                     //console.log("RESPUESTA DEL RESULT =>" + itemExists);
                     if (itemExists) {
                         let productInfo = await product.findOne({ $album: album.$_id });
-                        let entryResult = await entryService.addEntry(sender, productInfo);
+                        let entryResult = await entryService.addEntry(this.getSessionIDs(sender), productInfo, null);
                         //console.log("PRODUCT INFO => " +productInfo);
                         await this.sendGenericMessage(sender, [
                             {
@@ -190,6 +191,8 @@ let messengerRespository = {
                             "name": "/contexts/noDisponible",
                             "lifespancount": 5
                         };
+                        
+                        let entryResult = await entryService.addEntry(this.getSessionIDs(sender), null, queryBody);
                         console.log("CONTEXT => " + response['outputContexts']);
                         await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
                     }
