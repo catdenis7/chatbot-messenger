@@ -1,5 +1,5 @@
 const Entry = require('../Models/Entry');
-const { default: Suggestion }=require('../Models/Suggestion.js');
+let Suggestion = require('../Models/Suggestion');
 let entryRepository = require('../Repository/EntryRepository');
 let prospectRepository = require('../Repository/ProspectRepository.js');
 const sessionService = require('./SessionService');
@@ -22,7 +22,8 @@ let entryService = {
         let suggestion = null; 
         if(suggestionBody != null){
             // TODO: Insertar Sugerencia por repositorio
-            suggestion = await Suggestion.insert(suggestionBody);
+            let suggestionDocument = new Suggestion(suggestionBody);
+            suggestion = await suggestionDocument.save();
         }
         let body = {
             "session": session,
