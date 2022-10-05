@@ -44,10 +44,10 @@ let messengerRespository = {
         try {
             let userData = await axios.get(
                 "https://graph.facebook.com/v6.0/" + senderId, {
-                    params: {
-                        access_token,
-                    },
-                }
+                params: {
+                    access_token,
+                },
+            }
             );
             return userData.data;
         } catch (err) {
@@ -104,8 +104,7 @@ let messengerRespository = {
                 console.log("PARAMETERS => ");
                 console.log(JSON.stringify(response.parameters));
 
-                if(!response.allRequiredParamsPresent)
-                {
+                if (!response.allRequiredParamsPresent) {
                     this.sendTextMessage(sender, response.fulfillmentText);
                     break;
                 }
@@ -116,20 +115,20 @@ let messengerRespository = {
                     "phoneNumber": response["parameters"]["fields"]["phone-number"]["stringValue"],
                     "email": response["parameters"]["fields"]["email"]["stringValue"]
                 }
-                let prospectQuery = { 
-                    "facebookID" : sender
+                let prospectQuery = {
+                    "facebookID": sender
                 }
 
-                let result = await clientService.insert(prospectQuery,queryBody);
+                let result = await clientService.insert(prospectQuery, queryBody);
                 this.sendTextMessage(sender, response.fulfillmentText);
-            break;
+                break;
             case "Estado2.Informacion.action":
                 console.log(response.parameters);
                 if (response.allRequiredParamsPresent) {
-                    response['outputContexts'] = {
+                    /*response['outputContexts'] = {
                         "name": "/contexts/noDisponible",
                         "lifespancount": 5
-                    };
+                    };*/
                     let queryBody = {
                         "name": response["parameters"]["fields"]["albumes"]["stringValue"],
                         "artist": response["parameters"]["fields"]["artista"]["stringValue"],
@@ -143,13 +142,13 @@ let messengerRespository = {
                     let offer = Offer;
                     let itemPrice;
 
-                    let albumInfo = await album.findOne({$_id:product.album});
+                    let albumInfo = await album.findOne({ $_id: product.album });
                     //console.log("ALBUM INFO => "+ albumInfo)
-                    
-                    let presentationInfo = await presentation.findOne({$_id:product.presentation});
+
+                    let presentationInfo = await presentation.findOne({ $_id: product.presentation });
                     //console.log("PRESENTACION INFO => "+ presentationInfo);
 
-                    let priceInfo = await price.findOne({$product:product.$_id});
+                    let priceInfo = await price.findOne({ $product: product.$_id });
                     //console.log("PRICE INFO => "+ priceInfo);
 
                     let nameCheck = albumInfo.name == queryBody.name;
@@ -162,10 +161,10 @@ let messengerRespository = {
                     if (priceInfo.status) {
                         itemPrice = priceInfo.standardPrice;
                     } else {
-                        let offerInfo = await offer.findOne({$price: price.$_id});
+                        let offerInfo = await offer.findOne({ $price: price.$_id });
                         //console.log("OFFER INFO => "+ offerInfo);
-                        if (offerInfo.status){
-                            itemPrice = priceInfo.standardPrice * (offerInfo.discount/100);
+                        if (offerInfo.status) {
+                            itemPrice = priceInfo.standardPrice * (offerInfo.discount / 100);
                         } else {
                             console.log("ERROR: VERIFICAR STATUS DE PRICE Y OFFER");
                         }
@@ -174,7 +173,7 @@ let messengerRespository = {
                     let itemExists = nameCheck && artistCheck && presentationCheck;
                     //console.log("RESPUESTA DEL RESULT =>" + itemExists);
                     if (itemExists) {
-                        let productInfo = await product.findOne({$album: album.$_id});
+                        let productInfo = await product.findOne({ $album: album.$_id });
                         //console.log("PRODUCT INFO => " +productInfo);
                         await this.sendGenericMessage(sender, [
                             {
@@ -183,86 +182,150 @@ let messengerRespository = {
                                 subtitle: "Formato: " + presentationInfo.type + "\n" + "Bs. " + itemPrice,
                             },
                         ]);
-                        await this.sendTextMessage(sender,"Si lo tenemos disponible ¿deseas realizar un pedido?");
+                        await this.sendTextMessage(sender, "Si lo tenemos disponible ¿deseas realizar un pedido?");
                     } else {
-                        await this.sendTextMessage(sender,"Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
+                        response['outputContexts'] = {
+                            "name": "/contexts/noDisponible",
+                            "lifespancount": 5
+                        };
+                        console.log("CONTEXT => " + response['outputContexts']);
+                        await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
                     }
                 } else {
                     this.sendTextMessage(sender, response.fulfillmentText);
-                }            
+                }
                 break;
-                case "EstadoV1.ValoracionCompra.action":
-                    //console.log(response.parameters);
-                    if (response.allRequiredParamsPresent){
-                        let queryBody = {
-                            "number": response["parameters"]["fields"]["number"]["numberValue"],
-                        }
-                        let prospect = Prospect;
-    
-                        let prospectInfo = await prospect.findOne({$facebookID:sender});
-                        //console.log("sessionID => "+ sessionIDs.get(sender));
-                        //console.log("score => "+ queryBody.number);
-                        //console.log("startDate => "+ startDate);
-                        //console.log("endDate => "+ Date.now);
-                        //console.log("prospect => "+ prospectInfo._id);
-                        sessionService.upsert({sessionID: sessionIDs.get(sender)},{
-                            score: queryBody.number,
-                            endDate: Date.now(),
-                        });
-                        console.log("SI FUNCA V1");
-                        this.sendTextMessage(sender, response.fulfillmentText);
-                    } else {
-                        this.sendTextMessage(sender, response.fulfillmentText);
+            case "EstadoV1.ValoracionCompra.action":
+                //console.log(response.parameters);
+                if (response.allRequiredParamsPresent) {
+                    let queryBody = {
+                        "number": response["parameters"]["fields"]["number"]["numberValue"],
                     }
-                    break;
-                case "EstadoV2.ValoracionNoCompra.action":
-                    //console.log(response.parameters);
-                    if (response.allRequiredParamsPresent){
-                        let queryBody = {
-                            "number": response["parameters"]["fields"]["number"]["numberValue"],
-                        }
-                        let prospect = Prospect;
-    
-                        let prospectInfo = await prospect.findOne({$facebookID:sender});
-                        //console.log("sessionID => "+ sessionIDs.get(sender));
-                        //console.log("score => "+ queryBody.number);
-                        //console.log("startDate => "+ startDate);
-                        //console.log("endDate => "+ Date.now);
-                        //console.log("prospect => "+ prospectInfo._id);
-                        sessionService.upsert({sessionID: sessionIDs.get(sender)},{
-                            score: queryBody.number,
-                            endDate: Date.now(),
-                        });
-                        console.log("SI FUNCA V2");
-                    }else {
-                        this.sendTextMessage(sender, response.fulfillmentText);
+                    let prospect = Prospect;
+
+                    let prospectInfo = await prospect.findOne({ $facebookID: sender });
+                    //console.log("sessionID => "+ sessionIDs.get(sender));
+                    //console.log("score => "+ queryBody.number);
+                    //console.log("startDate => "+ startDate);
+                    //console.log("endDate => "+ Date.now);
+                    //console.log("prospect => "+ prospectInfo._id);
+                    sessionService.upsert({ sessionID: sessionIDs.get(sender) }, {
+                        score: queryBody.number,
+                        endDate: Date.now(),
+                    });
+                    console.log("SI FUNCA V1");
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                } else {
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                }
+                break;
+            case "EstadoV2.ValoracionNoCompra.action":
+                //console.log(response.parameters);
+                if (response.allRequiredParamsPresent) {
+                    let queryBody = {
+                        "number": response["parameters"]["fields"]["number"]["numberValue"],
                     }
+                    let prospect = Prospect;
+
+                    let prospectInfo = await prospect.findOne({ $facebookID: sender });
+                    //console.log("sessionID => "+ sessionIDs.get(sender));
+                    //console.log("score => "+ queryBody.number);
+                    //console.log("startDate => "+ startDate);
+                    //console.log("endDate => "+ Date.now);
+                    //console.log("prospect => "+ prospectInfo._id);
+                    sessionService.upsert({ sessionID: sessionIDs.get(sender) }, {
+                        score: queryBody.number,
+                        endDate: Date.now(),
+                    });
+                    console.log("SI FUNCA V2");
+                } else {
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                }
+                break;
+            case "EstadoV3.MostrarPromos.action":
+                //console.log(response.parameters);
+                if (response.allRequiredParamsPresent) {
+                    let queryBody = {
+                        "number": response["parameters"]["fields"]["number"]["numberValue"],
+                    }
+                    let prospect = Prospect;
+
+                    let prospectInfo = await prospect.findOne({ $facebookID: sender });
+                    //console.log("sessionID => "+ sessionIDs.get(sender));
+                    //console.log("score => "+ queryBody.number);
+                    //console.log("startDate => "+ startDate);
+                    //console.log("endDate => "+ Date.now);
+                    //console.log("prospect => "+ prospectInfo._id);
+                    sessionService.upsert({ sessionID: sessionIDs.get(sender) }, {
+                        score: queryBody.number,
+                        endDate: Date.now(),
+                    });
+                    console.log("SI FUNCA V3");
+                } else {
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                }
+                break;
+            //case "Estado7A.EleccionPromo.action":
+                
+            //    break;
+            case "Estado9.Promociones.action":
+                let offer = Offer;
+                let price = Price;
+                let product = Product;
+                let album = Album;
+                let presentation = Presentation;
+                let offerInfo = await offer.find({ status: "true" });
+                console.log("SOY OOFER  INF===> "+ offerInfo);
+                console.log("hizzzzzzz ==> " + offerInfo.length);
+                let card = [];
+                if (offerInfo.length == 0){
+                    this.sendTextMessage(sender, "Por el momento, no tenemos promociones disponibles");
                     break;
-                    case "EstadoV3.MostrarPromos.action":
-                        //console.log(response.parameters);
-                        if (response.allRequiredParamsPresent){
-                            let queryBody = {
-                                "number": response["parameters"]["fields"]["number"]["numberValue"],
-                            }
-                            let prospect = Prospect;
-        
-                            let prospectInfo = await prospect.findOne({$facebookID:sender});
-                            //console.log("sessionID => "+ sessionIDs.get(sender));
-                            //console.log("score => "+ queryBody.number);
-                            //console.log("startDate => "+ startDate);
-                            //console.log("endDate => "+ Date.now);
-                            //console.log("prospect => "+ prospectInfo._id);
-                            sessionService.upsert({sessionID: sessionIDs.get(sender)},{
-                                score: queryBody.number,
-                                endDate: Date.now(),
-                            });
-                            console.log("SI FUNCA V3");
-                        }else {
-                            this.sendTextMessage(sender, response.fulfillmentText);
-                        }
-                        break;
+                }
+                for (var i = 0; i < offerInfo.length; i++) {
+                    let offerItem = offerInfo[i];
+                    console.log("SOY EL ITEM " +i+ "  ==>" +offerItem);
+                    console.log("Soy el ID de Item " +offerItem.price);
+                    //let offerCompare = await offer.findOne({$_id:offerItem.$price});
+                    let priceInfo = await price.findOne({_id:offerItem.price});
+                    let productInfo = await product.findOne({_id:priceInfo.product});
+                    let albumInfo = await album.findOne({ _id: productInfo.album });
+                    let presentationInfo = await presentation.findOne({ _id: productInfo.presentation});
+                    let itemPrice = priceInfo.standardPrice - (priceInfo.standardPrice * (offerItem.discount/100));
+                    
+                    /*
+                    console.log("priceInfo =>" + priceInfo);
+                    console.log("priceInfo =>" + priceInfo);
+                    console.log("productInfo =>" + productInfo);
+                    console.log("albumInfo =>" + albumInfo);
+                    console.log("presentationInfo =>" + presentationInfo);
+                    console.log("itemPrice =>" + itemPrice);
+                    */
+                    
+                    if (i < 10){
+                        card.push({
+                            title: albumInfo.name + " - " + albumInfo.artist,
+                            image_url: productInfo.image,
+                            subtitle: "Formato: " + presentationInfo.type + "\n" + 
+                                      "Antes: " + "Bs. "+ priceInfo.standardPrice + "\n"+ 
+                                      "Ahora: " + "Bs. " + itemPrice,
+                            buttons:[
+                                {
+                                  type:"postback",
+                                  title:"Realizar Compra",
+                                  payload:"MARACUYA",
+                                }              
+                              ]    
+                        },
+                        ); 
+                    }
+              
+                 }
+                await this.sendGenericMessage(sender, card);
+                break;
             default:
-                break;
+                //unhandled action, just send back the text
+                handleMessages(messages, sender);
         }
     },
 
@@ -400,14 +463,14 @@ let messengerRespository = {
     callSendAPI(messageData) {
         return new Promise((resolve, reject) => {
             request({
-                    uri: "https://graph.facebook.com/v6.0/me/messages",
-                    qs: {
-                        access_token: process.env.PAGE_ACCESS_TOKEN,
-                    },
-                    method: "POST",
-                    json: messageData,
+                uri: "https://graph.facebook.com/v6.0/me/messages",
+                qs: {
+                    access_token: process.env.PAGE_ACCESS_TOKEN,
                 },
-                function(error, response, body) {
+                method: "POST",
+                json: messageData,
+            },
+                function (error, response, body) {
                     if (!error && response.statusCode == 200) {
                         var recipientId = body.recipient_id;
                         var messageId = body.message_id;
