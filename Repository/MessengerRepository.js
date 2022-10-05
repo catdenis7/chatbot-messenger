@@ -17,6 +17,7 @@ const Presentation = require("../Models/Presentation");
 const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
 const Prospect = require("../Models/Prospect");
+const { default: entryService }=require('../Service/EntryService.js');
 
 const sessionIDs = new Map();
 let startDate;
@@ -157,7 +158,7 @@ let messengerRespository = {
                     //console.log("ARTISTCHECK => " + artistCheck);
                     let presentationCheck = presentationInfo.type == queryBody.presentation;
                     //console.log("PRESENTATIONCHECK => " + presentationCheck);
-
+                    
                     if (priceInfo.status) {
                         itemPrice = priceInfo.standardPrice;
                     } else {
@@ -174,6 +175,7 @@ let messengerRespository = {
                     //console.log("RESPUESTA DEL RESULT =>" + itemExists);
                     if (itemExists) {
                         let productInfo = await product.findOne({ $album: album.$_id });
+                        let entryResult = await entryService.addEntry(sender, productInfo);
                         //console.log("PRODUCT INFO => " +productInfo);
                         await this.sendGenericMessage(sender, [
                             {
