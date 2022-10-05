@@ -17,7 +17,7 @@ const Presentation = require("../Models/Presentation");
 const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
 const Prospect = require("../Models/Prospect");
-const { default: entryService }=require('../Service/EntryService.js');
+const entryService = require('../Service/EntryService.js');
 
 const sessionIDs = new Map();
 let startDate;
