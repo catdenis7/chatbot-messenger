@@ -269,6 +269,7 @@ let messengerRespository = {
                         endDate: Date.now(),
                     });
                     console.log("SI FUNCA V2");
+                    this.sendTextMessage(sender, response.fulfillmentText);
                 } else {
                     this.sendTextMessage(sender, response.fulfillmentText);
                 }
@@ -292,13 +293,137 @@ let messengerRespository = {
                         endDate: Date.now(),
                     });
                     console.log("SI FUNCA V3");
+                    this.sendTextMessage(sender, response.fulfillmentText);
                 } else {
                     this.sendTextMessage(sender, response.fulfillmentText);
                 }
                 break;
-            //case "Estado7A.EleccionPromo.action":
-                
-            //    break;
+                case "Estado9V.ValoracionPromo.action":
+                    //console.log(response.parameters);
+                    if (response.allRequiredParamsPresent) {
+                        let queryBody = {
+                            "number": response["parameters"]["fields"]["number"]["numberValue"],
+                        }
+                        let prospect = Prospect;
+    
+                        let prospectInfo = await prospect.findOne({ $facebookID: sender });
+                        //console.log("sessionID => "+ sessionIDs.get(sender));
+                        //console.log("score => "+ queryBody.number);
+                        //console.log("startDate => "+ startDate);
+                        //console.log("endDate => "+ Date.now);
+                        //console.log("prospect => "+ prospectInfo._id);
+                        sessionService.upsert({ sessionID: sessionIDs.get(sender) }, {
+                            score: queryBody.number,
+                            endDate: Date.now(),
+                        });
+                        console.log("SI FUNCA Estado9V.ValoracionPromo.action");
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    } else {
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    }
+                break;
+                case "Estado7NV.Valoracion.action":
+                    //console.log(response.parameters);
+                    if (response.allRequiredParamsPresent) {
+                        let queryBody = {
+                            "number": response["parameters"]["fields"]["number"]["numberValue"],
+                        }
+                        let prospect = Prospect;
+    
+                        let prospectInfo = await prospect.findOne({ $facebookID: sender });
+                        //console.log("sessionID => "+ sessionIDs.get(sender));
+                        //console.log("score => "+ queryBody.number);
+                        //console.log("startDate => "+ startDate);
+                        //console.log("endDate => "+ Date.now);
+                        //console.log("prospect => "+ prospectInfo._id);
+                        sessionService.upsert({ sessionID: sessionIDs.get(sender) }, {
+                            score: queryBody.number,
+                            endDate: Date.now(),
+                        });
+                        console.log("SI FUNCA Estado7NV.Valoracion.action");
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    } else {
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    }
+                break;
+                case "Estado8V.ValoracionPromo.action":
+                    //console.log(response.parameters);
+                    if (response.allRequiredParamsPresent) {
+                        let queryBody = {
+                            "number": response["parameters"]["fields"]["number"]["numberValue"],
+                        }
+                        let prospect = Prospect;
+    
+                        let prospectInfo = await prospect.findOne({ $facebookID: sender });
+                        //console.log("sessionID => "+ sessionIDs.get(sender));
+                        //console.log("score => "+ queryBody.number);
+                        //console.log("startDate => "+ startDate);
+                        //console.log("endDate => "+ Date.now);
+                        //console.log("prospect => "+ prospectInfo._id);
+                        sessionService.upsert({ sessionID: sessionIDs.get(sender) }, {
+                            score: queryBody.number,
+                            endDate: Date.now(),
+                        });
+                        console.log("SI FUNCA Estado8V.ValoracionPromo.action");
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    } else {
+                        this.sendTextMessage(sender, response.fulfillmentText);
+                    }
+                break;
+            case "Estado7A.EleccionPromo.action":
+                let offer7A = Offer;
+                let price7A = Price;
+                let product7A = Product;
+                let album7A = Album;
+                let presentation7A = Presentation;
+                let offerInfo7A = await offer7A.find({ status: "true" });
+                console.log("SOY OOFER  INF===> "+ offerInfo7A);
+                let card7A = [];
+                if (offerInfo7A.length == 0){
+                    this.sendTextMessage(sender, "Por el momento, no tenemos promociones disponibles");
+                    break;
+                }
+                for (var i = 0; i < offerInfo7A.length; i++) {
+                    let offerItem7A = offerInfo7A[i];
+                    console.log("SOY EL ITEM " +i+ "  ==>" + offerItem7A);
+                    console.log("Soy el ID de Item " + offerItem7A.price);
+                    //let offerCompare = await offer.findOne({$_id:offerItem.$price});
+                    let priceInfo7A = await price7A.findOne({_id:offerItem7A.price});
+                    let productInfo7A = await product7A.findOne({_id:priceInfo7A.product});
+                    let albumInfo7A = await album7A.findOne({ _id: productInfo7A.album });
+                    let presentationInfo7A = await presentation7A.findOne({ _id: productInfo7A.presentation});
+                    let itemPrice7A = priceInfo7A.standardPrice - (priceInfo7A.standardPrice * (offerItem7A.discount/100));
+                    
+                    /*
+                    console.log("priceInfo7A =>" + priceInfo7A);
+                    console.log("priceInfo7A =>" + priceInfo7A);
+                    console.log("productInfo7A =>" + productInfo7A);
+                    console.log("albumInfo7A =>" + albumInfo7A);
+                    console.log("presentationInfo7A =>" + presentationInfo7A);
+                    console.log("itemPrice7A =>" + itemPrice7A);
+                    */
+                    
+                    if (i < 10){
+                        card7A.push({
+                            title: albumInfo7A.name + " - " + albumInfo7A.artist,
+                            image_url: productInfo7A.image,
+                            subtitle: "Formato: " + presentationInfo7A.type + "\n" + 
+                                      "Antes: " + "Bs. "+ priceInfo7A.standardPrice + "\n"+ 
+                                      "Ahora: " + "Bs. " + itemPrice7A,
+                            buttons:[
+                                {
+                                  type:"postback",
+                                  title:"Comprar",
+                                  payload:"DEVELOPER_DEFINED_COMPRAR_ESTADO7A",
+                                }              
+                              ]    
+                        },
+                        ); 
+                    }
+              
+                 }
+                await this.sendGenericMessage(sender, card7A);
+                break;
             case "Estado9.Promociones.action":
                 let offer = Offer;
                 let price = Price;
@@ -307,7 +432,6 @@ let messengerRespository = {
                 let presentation = Presentation;
                 let offerInfo = await offer.find({ status: "true" });
                 console.log("SOY OOFER  INF===> "+ offerInfo);
-                console.log("hizzzzzzz ==> " + offerInfo.length);
                 let card = [];
                 if (offerInfo.length == 0){
                     this.sendTextMessage(sender, "Por el momento, no tenemos promociones disponibles");
@@ -352,13 +476,19 @@ let messengerRespository = {
                     }
               
                  }
-                 console.log("Yo soy poronga");
                 await this.sendGenericMessage(sender, card);
-                console.log("Quien poronga sos");
+                break;
+            case "Estado11.Ubicacion.action":
+                await this.sendImageMessage(sender,"https://www.dondeir.com/wp-content/uploads/2017/05/tienda-de-discos-chowell.jpg");
+                await this.sendButtonMessage(sender, "¡Hola! Gracias por comunicarte con nosotros. Estamos ubicados entre la Calle Sucre y René Moreno, al frente de la plaza 24 de septiembre.", [
+                    {
+                      type: "web_url",
+                      url: "https://www.google.es/maps/place/Burger+King+-+Plaza+24/@-17.7838235,-63.2209568,13z/data=!4m9!1m2!2m1!1sBurger+King!3m5!1s0x93f1e80d16515083:0xee06d0de7b1a672d!8m2!3d-17.7838253!4d-63.1813674!15sCgtCdXJnZXIgS2luZyIDiAEBWg0iC2J1cmdlciBraW5nkgEUZmFzdF9mb29kX3Jlc3RhdXJhbnTgAQA?hl=es",
+                      title: "Abrir en Google Maps",
+                    },
+                  ]);
                 break;
             default:
-                //unhandled action, just send back the text
-                //await this.handleMessages(messages, sender);
                 await this.sendTextMessage(sender, response.fulfillmentText);
                 break;
         }
@@ -493,6 +623,25 @@ let messengerRespository = {
         };
         await this.callSendAPI(messageData);
     },
+
+    async sendButtonMessage(recipientId, text, buttons) {
+        var messageData = {
+          recipient: {
+            id: recipientId,
+          },
+          message: {
+            attachment: {
+              type: "template",
+              payload: {
+                template_type: "button",
+                text: text,
+                buttons: buttons,
+              },
+            },
+          },
+        };
+        await this.callSendAPI(messageData);
+      },
 
 
     callSendAPI(messageData) {
