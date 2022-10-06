@@ -103,6 +103,29 @@ let messengerRespository = {
 
     async handleDialogFlowAction(sender, response) {
         switch (response.action) {
+            case "CompraPromociones.action":
+                console.log("PARAMETERS => ");
+                console.log(JSON.stringify(response.parameters));
+
+                if (!response.allRequiredParamsPresent) {
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                    break;
+                }
+                else{
+                let queryBody = {
+                    "name": response["parameters"]["fields"]["nombre"]["stringValue"],
+                    "lastName": response["parameters"]["fields"]["apellido"]["stringValue"],
+                    "phoneNumber": response["parameters"]["fields"]["phone_number"]["stringValue"],
+                    "email": response["parameters"]["fields"]["email"]["stringValue"]
+                }
+                let prospectQuery = {
+                    "facebookID": sender
+                }
+                await clientService.insert(prospectQuery, queryBody);
+                this.sendTextMessage(sender, response.fulfillmentText);
+                }
+
+                break;
             case "Estado6A2:DatosContacto.action":
                 console.log("PARAMETERS => ");
                 console.log(JSON.stringify(response.parameters));
