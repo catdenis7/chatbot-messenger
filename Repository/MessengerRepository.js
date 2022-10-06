@@ -504,6 +504,11 @@ let messengerRespository = {
                     */
                     
                     if (i < 10){
+                        let postbackInfo = {
+                            "product_id" : productInfo._id,
+                            "session_id" : sessionIDs.get(sender),
+                            "postback" : "DEVELOPER_DEFINED_COMPRA"
+                        }
                         card.push({
                             title: albumInfo.name + " - " + albumInfo.artist,
                             image_url: productInfo.image,
@@ -514,7 +519,7 @@ let messengerRespository = {
                                 {
                                   type:"postback",
                                   title:"Compra",
-                                  payload:"DEVELOPER_DEFINED_COMPRA",
+                                  payload:JSON.stringify(postbackInfo),
                                 }              
                               ]    
                         },

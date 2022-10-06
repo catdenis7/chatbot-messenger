@@ -1,5 +1,6 @@
 const messengerService = require("../Service/MessengerService");
-
+const entryService = require("../Service/EntryService");
+const Product = require("../Models/Product.js");
 var request = require("request");
 const { response } = require("express");
 const { json } = require("body-parser");
@@ -67,7 +68,18 @@ let chatbotRepository = {
         var timeOfPostback = event.timestamp;
       
         var payload = event.postback.payload;
-        switch (payload) {
+                let deserialized = JSON.parse(payload);
+                let command = deserialized.postback;
+                let sessionId = deserialized.session_id;
+        console.log(payload);
+        switch (command) {
+            case "DEVELOPER_DEFINED_COMPRA":
+                let productModel = Product;
+                let product = await productModel.findById(deserialized.product_id);
+                console.log('PRODUCT ===>' + product);
+                await entryService.addEntry(sessionId,product,null)
+                await messengerService.sendToDialogFlow(senderId, payload);
+                break;
           default:
             //unindentified payload
             await messengerService.sendToDialogFlow(senderId, payload);
