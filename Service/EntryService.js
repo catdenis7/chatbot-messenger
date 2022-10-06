@@ -3,6 +3,7 @@ let Suggestion = require('../Models/Suggestion');
 let entryRepository = require('../Repository/EntryRepository');
 let prospectRepository = require('../Repository/ProspectRepository.js');
 const sessionService = require('./SessionService');
+let suggestionRepository = require('../Repository/SuggestionRepository');
 let entryService = {
 
     async find(query, many = false) {
@@ -21,9 +22,7 @@ let entryService = {
         let session = await sessionService.find({ sessionID: sessionId });
         let suggestion = null; 
         if(suggestionBody != null){
-            // TODO: Insertar Sugerencia por repositorio
-            let suggestionDocument = new Suggestion(suggestionBody);
-            suggestion = await suggestionDocument.save();
+            await suggestionRepository.insert(suggestionBody);
         }
         let body = {
             "session": session,
