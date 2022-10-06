@@ -103,7 +103,7 @@ let messengerRespository = {
 
     async handleDialogFlowAction(sender, response) {
         switch (response.action) {
-            case "Estado4.DatosCliente.action":
+            case "Estado6A2:DatosContacto.action":
                 console.log("PARAMETERS => ");
                 console.log(JSON.stringify(response.parameters));
 
@@ -124,6 +124,29 @@ let messengerRespository = {
 
                 let result = await clientService.insert(prospectQuery, queryBody);
                 this.sendTextMessage(sender, response.fulfillmentText);
+                break;
+            case "Estado4.DatosCliente.action":
+                console.log("PARAMETERS => ");
+                console.log(JSON.stringify(response.parameters));
+
+                if (!response.allRequiredParamsPresent) {
+                    this.sendTextMessage(sender, response.fulfillmentText);
+                    break;
+                }
+                else{
+                     let queryBody = {
+                         "name": response["parameters"]["fields"]["person"]["structValue"]["fields"]["name"]["stringValue"],
+                         "lastName": response["parameters"]["fields"]["apellido"]["stringValue"],
+                         "phoneNumber": response["parameters"]["fields"]["phone-number"]["stringValue"],
+                         "email": response["parameters"]["fields"]["email"]["stringValue"]
+                     }
+                     let prospectQuery = {
+                         "facebookID": sender
+                     }
+
+                     let result = await clientService.insert(prospectQuery, queryBody);
+                     this.sendTextMessage(sender, response.fulfillmentText);
+                }
                 break;
             case "Estado2.Informacion.action":
                 console.log(response.parameters);
