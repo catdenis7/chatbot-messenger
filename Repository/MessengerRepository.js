@@ -90,6 +90,7 @@ let messengerRespository = {
 
         if (this.isDefined(action)) {
             this.handleDialogFlowAction(sender, response);
+            
         } else if ((messages.length > 0)) {
             this.handleMessages(messages, sender);
         } else if (responseText == "" && !this.isDefined(action)) {
@@ -144,57 +145,82 @@ let messengerRespository = {
                     let offer = Offer;
                     let itemPrice;
 
-                    let albumInfo = await album.findOne({ $_id: product.album });
-                    //console.log("ALBUM INFO => "+ albumInfo)
+                    let albumInfo = await album.findOne({ name: queryBody.name, artist: queryBody.artist });
+                    console.log(product.album);
+                    console.log("ALBUM INFO => "+ albumInfo)
 
-                    let presentationInfo = await presentation.findOne({ $_id: product.presentation });
-                    //console.log("PRESENTACION INFO => "+ presentationInfo);
+                    let presentationInfo = await presentation.findOne({ type: queryBody.presentation });
+                    console.log("PRESENTACION INFO => "+ presentationInfo);
+/*
+                    let productInfo = await product.findOne({album: albumInfo._id, presentation: presentationInfo._id});
 
-                    let priceInfo = await price.findOne({ $product: product.$_id });
-                    //console.log("PRICE INFO => "+ priceInfo);
-
-                    let nameCheck = albumInfo.name == queryBody.name;
-                    //console.log("NAMECHECK => " + nameCheck);
-                    let artistCheck = albumInfo.artist == queryBody.artist;
-                    //console.log("ARTISTCHECK => " + artistCheck);
-                    let presentationCheck = presentationInfo.type == queryBody.presentation;
-                    //console.log("PRESENTATIONCHECK => " + presentationCheck);
+                    let priceInfo = await price.findOne({ product: productInfo._id });
+                    console.log("PRICE INFO => "+ priceInfo);
+*/
+                    let nameCheck = albumInfo != null && albumInfo.name == queryBody.name;
+                    console.log("NAMECHECK => " + nameCheck);
+                    let artistCheck = albumInfo != null && albumInfo.artist == queryBody.artist;
+                    console.log("ARTISTCHECK => " + artistCheck);
+                    let presentationCheck = presentationInfo != null && presentationInfo.type == queryBody.presentation;
+                    console.log("PRESENTATIONCHECK => " + presentationCheck);
                     
-                    if (priceInfo.status) {
-                        itemPrice = priceInfo.standardPrice;
-                    } else {
-                        let offerInfo = await offer.findOne({ $price: price.$_id });
-                        //console.log("OFFER INFO => "+ offerInfo);
-                        if (offerInfo.status) {
-                            itemPrice = priceInfo.standardPrice * (offerInfo.discount / 100);
-                        } else {
-                            console.log("ERROR: VERIFICAR STATUS DE PRICE Y OFFER");
-                        }
-                    }
 
                     let itemExists = nameCheck && artistCheck && presentationCheck;
                     //console.log("RESPUESTA DEL RESULT =>" + itemExists);
                     if (itemExists) {
-                        let productInfo = await product.findOne({ $album: album.$_id });
-                        let entryResult = await entryService.addEntry(this.getSessionIDs(sender), productInfo, null);
-                        //console.log("PRODUCT INFO => " +productInfo);
-                        await this.sendGenericMessage(sender, [
-                            {
-                                title: albumInfo.name + " - " + albumInfo.artist,
-                                image_url: productInfo.image,
-                                subtitle: "Formato: " + presentationInfo.type + "\n" + "Bs. " + itemPrice,
-                            },
-                        ]);
-                        await this.sendTextMessage(sender, "Si lo tenemos disponible ¿deseas realizar un pedido?");
-                    } else {
-                        response['outputContexts'] = {
+                        let productInfo = await product.findOne({album: albumInfo._id, presentation: presentationInfo._id});
+                        console.log("product info ===> "+ productInfo);
+                        if (productInfo != null){
+                            let priceInfo = await price.findOne({product: productInfo._id});
+                            console.log("PRICE INFO => "+ priceInfo);
+    
+                            if (priceInfo.status) {
+                                itemPrice = priceInfo.standardPrice;
+                            } else {
+                                let offerInfo = await offer.findOne({ price: priceInfo._id });
+                                console.log("OFFER INFO => "+ offerInfo);
+                                if (offerInfo.status) {
+                                    itemPrice = priceInfo.standardPrice - (priceInfo.standardPrice * (offerInfo.discount / 100));
+                                } else {
+                                    console.log("ERROR: VERIFICAR STATUS DE PRICE Y OFFER");
+                                }
+                            }
+                            // let productInfo = await product.findOne({ $album: album.$_id });
+                            let entryResult = await entryService.addEntry(this.getSessionIDs(sender), productInfo, null);
+                            //console.log("PRODUCT INFO => " +productInfo);
+                            await this.sendGenericMessage(sender, [
+                                {
+                                    title: albumInfo.name + " - " + albumInfo.artist,
+                                    image_url: productInfo.image,
+                                    subtitle: "Formato: " + presentationInfo.type + "\n" + "Bs. " + itemPrice,
+                                },
+                            ]);
+                            await this.sendTextMessage(sender, "Si lo tenemos disponible ¿deseas realizar un pedido?");
+                            /*response['outputContexts'] = {
+                            "name": "projects/velaryonbot-naos/agent/sessions/" + sessionIDs.get(sender) + "/contexts/sidisponible",
+                            "lifespancount": 5
+                            };
+                            console.log("CONTEXT =======>" +response.context) ;
+                            console.log("CONTEXT => " + JSON.stringify(response['outputContexts']));
+                            */
+                        
+                        } else {
+                            let entryResult = await entryService.addEntry(this.getSessionIDs(sender), null, queryBody);
+                        //console.log("CONTEXT => " + response['outputContexts']);
+                        //await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
+                        await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Cual es su nombre? 😄");                   
+                        }
+                       } else {
+                        /*response['outputContexts'] = {
                             "name": "/contexts/noDisponible",
                             "lifespancount": 5
                         };
-                        
+                        console.log("CONTEXT =======>" +response.context) ;
+                        */
                         let entryResult = await entryService.addEntry(this.getSessionIDs(sender), null, queryBody);
-                        console.log("CONTEXT => " + response['outputContexts']);
-                        await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
+                        //console.log("CONTEXT => " + response['outputContexts']);
+                        //await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄");
+                        await this.sendTextMessage(sender, "Disculpa, pero no tenemos ese ejemplar disponible. Puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Cual es su nombre? 😄");
                     }
                 } else {
                     this.sendTextMessage(sender, response.fulfillmentText);
@@ -317,8 +343,8 @@ let messengerRespository = {
                             buttons:[
                                 {
                                   type:"postback",
-                                  title:"Realizar Compra",
-                                  payload:"MARACUYA",
+                                  title:"Compra",
+                                  payload:"DEVELOPER_DEFINED_COMPRA",
                                 }              
                               ]    
                         },
@@ -326,11 +352,15 @@ let messengerRespository = {
                     }
               
                  }
+                 console.log("Yo soy poronga");
                 await this.sendGenericMessage(sender, card);
+                console.log("Quien poronga sos");
                 break;
             default:
                 //unhandled action, just send back the text
-                handleMessages(messages, sender);
+                //await this.handleMessages(messages, sender);
+                await this.sendTextMessage(sender, response.fulfillmentText);
+                break;
         }
     },
 

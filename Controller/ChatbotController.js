@@ -21,8 +21,9 @@ let chatbot = {
     verification(req, res) {
         chatbotService.verification(req, res);
     },
-
+    
     responseHandler(req, res) {
+        console.log("Request webhook" + JSON.stringify(req.body));
         chatbotService.responseHandler(req, res);
     },
 

@@ -26,6 +26,10 @@ let chatbotService = {
                     if (event.message) {
                         await chatbotRepository.processEvent(event);
                     }
+                    if(event.postback) {
+                        console.log("Soy un postback");
+                        await chatbotRepository.receivedPostback(event);
+                    }
                 });
             });
             res.sendStatus(200);

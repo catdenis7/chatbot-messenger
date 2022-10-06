@@ -15,7 +15,10 @@ let chatbotRepository = {
 
         messengerService.saveUserData(senderID);
         // Si en el evento existe un mensaje de tipo texto
-        if (senderID == "110434878458920") return;
+        if (senderID == "110434878458920") {
+            console.log("Evento Bot" + JSON.stringify(event));
+            return;
+        }
         if (message.text) {
             // Crear un payload para un simple mensaje de texto
             //let dialogFlowResponse = await dialogflowApi.processText(message.text, senderID);
@@ -56,7 +59,29 @@ let chatbotRepository = {
                 }
             }
         );
-    }
+    },
+
+    async receivedPostback(event) {
+        var senderId = event.sender.id;
+        var recipientID = event.recipient.id;
+        var timeOfPostback = event.timestamp;
+      
+        var payload = event.postback.payload;
+        switch (payload) {
+          default:
+            //unindentified payload
+            await messengerService.sendToDialogFlow(senderId, payload);
+            break;
+        }
+      
+        console.log(
+          "Received postback for user %d and page %d with payload '%s' " + "at %d",
+          senderId,
+          recipientID,
+          payload,
+          timeOfPostback
+        );
+      }
 }
 
 module.exports = chatbotRepository;
