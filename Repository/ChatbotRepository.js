@@ -16,7 +16,7 @@ let chatbotRepository = {
 
         messengerService.saveUserData(senderID);
         // Si en el evento existe un mensaje de tipo texto
-        if (senderID == "110434878458920") {
+        if (senderID == String(process.env.FACEBOOK_SENDER_ID)) {
             console.log("Evento Bot" + JSON.stringify(event));
             return;
         }
@@ -47,7 +47,7 @@ let chatbotRepository = {
 
         // Enviar el requisito HTTP a la plataforma de messenger
         request({
-                uri: "https://graph.facebook.com/v2.6/me/messages",
+                uri: process.env.FACEBOOK_API_URL + "/me/messages",
                 qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
                 method: "POST",
                 json: request_body,

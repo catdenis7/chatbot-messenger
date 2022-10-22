@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const chatbotService = require('../Service/ChabotService');
 
 mongoose.connect(
-    'mongodb+srv://corlysvelaryon:test@mondongo-bot.zakwctm.mongodb.net/velaryon?retryWrites=true&w=majority',
+    String(process.env.MONGODB_URL),
     (err, res) => {
         if (err) return console.log("Hubo un error en la base de datos ", err);
         console.log("BASE DE DATOS ONLINE");

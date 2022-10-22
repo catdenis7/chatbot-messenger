@@ -45,7 +45,7 @@ let messengerRespository = {
         let access_token = process.env.PAGE_ACCESS_TOKEN;
         try {
             let userData = await axios.get(
-                "https://graph.facebook.com/v6.0/" + senderId, {
+                process.env.FACEBOOK_API_URL + senderId, {
                 params: {
                     access_token,
                 },
@@ -698,7 +698,7 @@ let messengerRespository = {
     callSendAPI(messageData) {
         return new Promise((resolve, reject) => {
             request({
-                uri: "https://graph.facebook.com/v6.0/me/messages",
+                uri: process.env.FACEBOOK_API_URL+ "/me/messages",
                 qs: {
                     access_token: process.env.PAGE_ACCESS_TOKEN,
                 },
