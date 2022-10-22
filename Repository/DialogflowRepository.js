@@ -8,7 +8,6 @@ let dialogFlowRepository = {
     async runSample(inputText, senderID, source) {
         const rawKey = require('../apikey.json');
         let apikey = JSON.parse(JSON.stringify(rawKey));
-        //let sessionId = await getUuidFromDb(senderID);
         //console.log(sessionId);
         //  Creando Sesion nueva
         const sessionClient = new dialogflow.SessionsClient({
@@ -78,29 +77,6 @@ let dialogFlowRepository = {
         return uuid.v4(byteArray);
     },
 
-    async getUuidFromDb(facebookId) {
-        console.log("Facebook ID => " + facebookId);
-        let getUrl = String(process.env.APIURL) + '/get/' + String(facebookId);
-        let postUrl = String(process.env.APIURL) + '/save';
-        let uuid = 'ID MALA';
-        await axios.get(getUrl).then(
-            async(response) => {
-                if (response.data.length == 0) {
-                    uuid = idToUuid(facebookId);
-                    await axios({
-                        method: 'POST',
-                        url: postUrl,
-                        data: {
-                            'facebook_id': facebookId,
-                            'session_id': uuid
-                        }
-                    }).catch((e) => { console.error(e) });
-                } else uuid = response.data[0].session_id;
-            }
-        ).catch((e) => { console.error("NO SE PUDO SINCRONIZAR") });
-        console.log("UUID => " + uuid);
-        return uuid;
-    }
 }
 
 
