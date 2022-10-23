@@ -1,4 +1,5 @@
 var chatbot = require("./Controller/ChatbotController");
+const mongoose = require('mongoose');
 var dialogflowApi = require("./Controller/DialogflowController");
 // Importar las dependencias para configurar el servidor
 var express = require("express");
@@ -16,6 +17,15 @@ var app = express();
 require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+mongoose.connect(
+    String(process.env.MONGODB_URL),
+    (err, res) => {
+        if (err) return console.log("Hubo un error en la base de datos ", err);
+        console.log("BASE DE DATOS ONLINE");
+    }
+);
+
 // configurar el puerto y el mensaje en caso de exito
 app.listen((process.env.PORT || 5000), () => console.log('El servidor webhook esta escuchando!'));
 

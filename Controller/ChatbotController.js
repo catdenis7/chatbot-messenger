@@ -5,13 +5,6 @@ const mongoose = require('mongoose');
 
 const chatbotService = require('../Service/ChabotService');
 
-mongoose.connect(
-    String(process.env.MONGODB_URL),
-    (err, res) => {
-        if (err) return console.log("Hubo un error en la base de datos ", err);
-        console.log("BASE DE DATOS ONLINE");
-    }
-);
 
 let chatbot = {
     index(req, res) {

@@ -1,5 +1,3 @@
-import { response } from './BaseAction.js';
-
 const baseAction = require('./BaseAction');
 const clientService = require('../Service/ClientService');
 
