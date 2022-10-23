@@ -3,10 +3,12 @@ const Schema = mongoose.Schema;
 
 const PriceSchema = new Schema(
   {
-    standardPrice: Number,
+    basePrice: Number,
+    salesPrice: Number,
     description: String,
     status: Boolean,
-    product: {type: Schema.ObjectId, ref: "Product"}
+    product: {type: Schema.ObjectId, ref: "Product"},
+    offer: {type: Schema.ObjectId, ref: "Offer"},
   },
   { timestamps: true }
 );

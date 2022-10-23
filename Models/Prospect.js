@@ -6,6 +6,9 @@ const ProspectSchema = new Schema(
     facebookID: String,
     facebookName: String,
     profilePicture: String,
+    phoneNumber: String,
+    email: String,
+    url: String,
   },
   { timestamps: true }
 );

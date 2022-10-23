@@ -4,9 +4,11 @@ const Schema = mongoose.Schema;
 const OfferSchema = new Schema(
   {
     discount: Number,
+    description: String,
     date: Date,
     status: Boolean,
-    price: {type: Schema.ObjectId, ref: "Price"}
+    fromDate: Date,
+    toDate: Date,
   },
   { timestamps: true }
 );

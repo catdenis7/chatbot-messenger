@@ -7,7 +7,6 @@ const SugestionSchema = new Schema(
     name: String,
     artist: String,
     presentation: String,
-    session: {type: Schema.ObjectId, ref: "Session"}
   },
   { timestamps: true }
 );

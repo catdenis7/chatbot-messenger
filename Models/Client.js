@@ -7,6 +7,7 @@ const ClientSchema = new Schema(
     lastName: String,
     phoneNumber: String,
     email: String,
+    type: String,
     prospect: {type: Schema.ObjectId, ref: "Prospect"}
   },
   { timestamps: true }

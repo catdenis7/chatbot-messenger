@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
   image: String,
+  currentPrice: Number,
+  price: {type: Schema.ObjectId, ref: "Price"},
   album: {type: Schema.ObjectId, ref: "Album"},
   presentation: {type: Schema.ObjectId, ref: "Presentation"}
 },{timestamps: true}
