@@ -57,8 +57,15 @@ let messengerService = {
             console.log("Salio mal en sendToDialogFlow", error);
 
         }
-    }
+    },
 
+    async setSessionAndUser(senderId){
+        await messengerRespository.setSessionAndUser(senderId);
+    },
+    
+    handleDialogFlowResponse(sender, response){
+        messengerRespository.handleDialogFlowResponse(sender, response);
+    }
 }
 
 module.exports = messengerService;

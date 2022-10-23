@@ -6,6 +6,7 @@ const prospectService = require('../Service/ProspectService')
 
 const Album = require("../Models/Album");
 const sessionIDs = new Map();
+const messengerService = require('../Service/MessengerService')
 
 let messenger = {
     async saveUserData(facebookID) {
@@ -27,18 +28,16 @@ let messenger = {
     async sendToDialogFlow(senderID, messageText) {
         try {
             let result;
-            setSessionAndUser(senderID);
-            console.log("SOY EL SENDERID UWWWWWWWWWWU =====> " +senderID);
+            await messengerService.setSessionAndUser(senderID);
             let session = sessionIDs.get(senderID);
             result = await dialogflowApi.processText(messageText, session, "FACEBOOK");
-            handleDialogFlowResponse(senderID, result);
+            messengerService.handleDialogFlowResponse(senderID, result);
         } catch (error) {
             console.log("Salio mal en sendToDialogFlow", error);
-
         }
     }
 
-    
+
 
 }
 
