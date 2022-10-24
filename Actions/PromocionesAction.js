@@ -5,16 +5,14 @@ const Presentation = require("../Models/Presentation");
 const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
 
-let promocionesAction = baseAction;
-
-promocionesAction.handleAction = async function(sender, response) {
+let promocionesAction = {async handleAction(sender, response) {
     let offer = Offer;
     let price = Price;
     let product = Product;
     let album = Album;
     let presentation = Presentation;
     let offerInfo = await offer.find({ status: "true" });
-    console.log("SOY OOFER  INF===> " + offerInfo);
+    console.log("SOY PROMOCIONES!!!!!  INF===> " + offerInfo);
     let card = [];
     if (offerInfo.length == 0) {
         return baseAction.response(baseAction.codes.TEXT, "Por el momento, no tenemos promociones disponibles");
@@ -33,8 +31,8 @@ promocionesAction.handleAction = async function(sender, response) {
         if (i < 10) {
             let postbackInfo = {
                 "product_id": productInfo._id,
-                "session_id": sessionIDs.get(sender),
-                "postback": "DEVELOPER_DEFINED_COMPRA"
+                "session_id": sender,
+                "postback": "DEVELOPER_DEFINED_CARRITO_PROMO"
             }
             card.push({
                 title: albumInfo.name + " - " + albumInfo.artist,
@@ -45,7 +43,7 @@ promocionesAction.handleAction = async function(sender, response) {
                 buttons: [
                     {
                         type: "postback",
-                        title: "Compra",
+                        title: "AÑADIR AL CARRITO",
                         payload: JSON.stringify(postbackInfo),
                     }
                 ]
@@ -55,6 +53,7 @@ promocionesAction.handleAction = async function(sender, response) {
 
     }
     return baseAction.response(baseAction.codes.GENERIC,card);
+}
 }
 
 module.exports = promocionesAction; 

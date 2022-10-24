@@ -1,9 +1,7 @@
 const baseAction = require('./BaseAction');
 const clientService = require('../Service/ClientService');
 
-let compraPromocionesAction = baseAction;
-
-compraPromocionesAction.handleAction = async function(sender, response) {
+let compraPromocionesAction = {async handleAction(sender, response) {
 
     console.log("PARAMETERS => ");
     console.log(JSON.stringify(response.parameters));
@@ -23,6 +21,7 @@ compraPromocionesAction.handleAction = async function(sender, response) {
         await clientService.insert(prospectQuery, queryBody);
         return baseAction.response(baseAction.codes.TEXT,response.fulfillmentText);
     }
+}
 }
 
 module.exports = compraPromocionesAction; 

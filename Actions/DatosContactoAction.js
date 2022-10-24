@@ -1,9 +1,7 @@
 const baseAction = require('./BaseAction');
 const clientService = require('../Service/ClientService');
 
-let datosContactoAction = baseAction;
-
-datosContactoAction.handleAction = async function(sender, response) {
+let datosContactoAction = {async handleAction(sender, response) {
 
     console.log("PARAMETERS => ");
     console.log(JSON.stringify(response.parameters));
@@ -24,6 +22,7 @@ datosContactoAction.handleAction = async function(sender, response) {
 
     let result = await clientService.insert(prospectQuery, queryBody);
     return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
+}
 }
 
 module.exports = datosContactoAction; 

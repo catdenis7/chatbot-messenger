@@ -4,13 +4,13 @@ const axios = require("axios");
 const uuid = require('uuid');
 const utils = require('../Utils/Utils')
 
-const compraPromocionesAction = require('../Actions/CompraPromocionesAction');
-const datosContactoAction = require('../Actions/DatosContactoAction');
-const datosClienteAction = require('../Actions/DatosClienteAction');
-const informacionAction = require('../Actions/InformacionAction');
-const valoracionCompraAction = require('../Actions/ValoracionCompra');
-const eleccionPromoAction = require('../Actions/EleccionPromoAction');
-const promocionesAction = require('../Actions/PromocionesAction');
+let compraPromocionesAction = require('../Actions/CompraPromocionesAction');
+let datosContactoAction = require('../Actions/DatosContactoAction');
+let datosClienteAction = require('../Actions/DatosClienteAction');
+let informacionAction = require('../Actions/InformacionAction');
+let valoracionCompraAction = require('../Actions/ValoracionCompra');
+let eleccionPromoAction = require('../Actions/EleccionPromoAction');
+let promocionesAction = require('../Actions/PromocionesAction');
 
 const sessionIDs = new Map();
 
@@ -23,8 +23,7 @@ let messengerRespository = {
     async setSessionAndUser(senderId) {
         try {
             if (!sessionIDs.has(senderId)) {
-                sessionIDs.set(senderId, uuid.v1());
-                startDate = Date.now();
+                sessionIDs.set(senderId, uuid.v1()); startDate = Date.now();
             }
         } catch (error) {
             throw error;
@@ -93,34 +92,45 @@ let messengerRespository = {
     },
 
     async handleDialogFlowAction(sender, response) {
+        console.log("\n\n\n\n\n\n\n" + response.action +"\n\n\n\n\n\n")
         switch (response.action) {
-            case "CompraPromociones.action":
-                this.sendMessageHandler(await compraPromocionesAction.handleCardMessages(sender, response));
-                break;
-            case "Estado6A2:DatosContacto.action":
-                this.sendMessageHandler(await datosContactoAction.handleAction(sender,response));
-                break;
-            case "Estado4.DatosCliente.action":
-                this.sendMessageHandler(await datosClienteAction.handleAction(sender,response));
-                break;
             case "Estado2.Informacion.action":
-                this.sendMessageHandler(await informacionAction.handleAction(sender,response));
+                console.warn("\n\n\n\n\n\n ACTION!!!!!\n\n\n\n\n\n\n\n")
+                let result = await informacionAction.handleAction(this.getSessionIDs(sender), response);
+                if(result.cards == null){
+                    this.sendMessageHandler(sender,result);
+                    break;
+                }
+                this.sendGenericMessage(sender,result.cards);
+                this.sendTextMessage(sender,result.text);
                 break;
-            case "EstadoV1.ValoracionCompra.action":
-            case "EstadoV2.ValoracionNoCompra.action":
-            case "EstadoV3.MostrarPromos.action":
+            /*
+            case "CompraPromociones.action":
+                this.sendMessageHandler(sender, await compraPromocionesAction.handleAction(sender, response));
+                break;
+            */
+            case "Estado14.DatosCliente.action":
+                this.sendMessageHandler(sender, await datosContactoAction.handleAction(sender, response));
+                break;
+            case "Estado8.DatosCliente.action":
+                this.sendMessageHandler(sender, await datosClienteAction.handleAction(sender, response));
+                break;
+            case "Estado10.ValoracionCompra.action":
+            case "Estado12.ValoracionNoCompra.action":
+            //case "EstadoV3.MostrarPromos.action":
             case "Estado9V.ValoracionPromo.action":
-            case "Estado7NV.Valoracion.action":
-            case "Estado8V.ValoracionPromo.action":
-                this.sendMessageHandler(await valoracionCompraAction.handleAction(sender,response));
+            case "Estado17.Valoracion.action":
+            //case "Estado8V.ValoracionPromo.action":
+                this.sendMessageHandler(sender, await valoracionCompraAction.handleAction(this.getSessionIDs(sender), response));
                 break;
-            case "Estado7A.EleccionPromo.action":
-                this.sendMessageHandler(await eleccionPromoAction.handleAction(sender,response));
+            case "Estado18.ProductosEnPromocion.action":
+                this.sendMessageHandler(sender, await eleccionPromoAction.handleAction(sender, response));
                 break;
-            case "Estado9.Promociones.action":
-                this.sendMessageHandler(await promocionesAction.handleAction(sender,response));
+            case "Estado26.Promociones.action":
+                console.error(response.action);
+                this.sendMessageHandler(sender, await promocionesAction.handleAction(this.getSessionIDs(sender), response));
                 break;
-            case "Estado11.Ubicacion.action":
+            case "Estado29.Ubicacion.action":
                 await this.sendImageMessage(sender, "https://www.dondeir.com/wp-content/uploads/2017/05/tienda-de-discos-chowell.jpg");
                 await this.sendButtonMessage(sender, "¡Hola! Gracias por comunicarte con nosotros. Estamos ubicados entre la Calle Sucre y René Moreno, al frente de la plaza 24 de septiembre.", [
                     {
@@ -216,12 +226,14 @@ let messengerRespository = {
     },
 
     async sendMessageHandler(sender, result) {
-        switch (result.code) {
+        console.log(JSON.stringify(result));
+        switch (result["code"]) {
             case 1:
                 this.sendButtonMessage(sender, result.data.text, result.data.buttons);
                 break;
             case 2:
                 this.sendGenericMessage(sender, result.data);
+                break;
             case 3:
                 this.sendImageMessage(sender, result.data);
                 break;

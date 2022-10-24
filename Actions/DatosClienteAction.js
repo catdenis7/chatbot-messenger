@@ -1,9 +1,8 @@
 const baseAction = require('./BaseAction');
 const clientService = require('../Service/ClientService');
 
-let datosClienteAction = baseAction;
-
-datosClienteAction.handleAction = async function(sender, response) {
+let datosClienteAction = {async handleAction(sender, response) {
+    console.log("SOY DATOS CLIENTE");
     console.log("PARAMETERS => ");
     console.log(JSON.stringify(response.parameters));
 
@@ -26,6 +25,7 @@ datosClienteAction.handleAction = async function(sender, response) {
         return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
 
     }
+}
 }
 
 module.exports = datosClienteAction; 
