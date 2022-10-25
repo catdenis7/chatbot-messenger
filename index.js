@@ -1,6 +1,8 @@
 var chatbot = require("./Controller/ChatbotController");
 const mongoose = require('mongoose');
 var dialogflowApi = require("./Controller/DialogflowController");
+
+let clientController = require("./Controller/ClientController");
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -41,6 +43,10 @@ app.get("/webhook", (req, res) => chatbot.verification(req, res));
 app.post("/webhook", (req, res) => chatbot.responseHandler(req, res));
 
 app.post("/dialogflow/send", async(req, res) => dialogflowApi.sendText(req, res));
+
+//  Servicios para pagina web
+
+app.get("/clients/cards", async(req, res) => clientController.getCards(req,res));
 
 // Modelos de MongoDB
 app.post("/album", (req, res) => {

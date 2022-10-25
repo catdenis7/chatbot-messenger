@@ -12,7 +12,7 @@ let sessionService = {
 
     async upsert(query, newData) {
         return await sessionRepository.upsert(query, newData);
-    }
+    },
 
 
 }

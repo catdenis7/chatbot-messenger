@@ -1,12 +1,15 @@
 const Session = require('../Models/Session');
 
 let sessionRepository = {
-    async find(query, many = false) {
+    async find(query, many = false,sort) {
         const session = Session;
 
         let result;
         if (many)
-            result = await session.find(query);
+            if(sort != null)
+                result = await session.find(query)//.sort(sort);
+            else
+                result = await session.find(query);
         else
             result = await session.findOne(query);
 
@@ -30,6 +33,12 @@ let sessionRepository = {
         );
 
         return await result.save();
+    },
+    async count(query){
+        let session = Session;
+        let result = await session.count(query);
+
+        return result;
     }
 }
 
