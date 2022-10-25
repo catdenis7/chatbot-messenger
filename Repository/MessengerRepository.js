@@ -11,6 +11,7 @@ let informacionAction = require('../Actions/InformacionAction');
 let valoracionCompraAction = require('../Actions/ValoracionCompra');
 let eleccionPromoAction = require('../Actions/EleccionPromoAction');
 let promocionesAction = require('../Actions/PromocionesAction');
+let adicionarAlCarritoAction = require('../Actions/AdicionarAlCarritoAction');
 
 const sessionIDs = new Map();
 
@@ -23,7 +24,8 @@ let messengerRespository = {
     async setSessionAndUser(senderId) {
         try {
             if (!sessionIDs.has(senderId)) {
-                sessionIDs.set(senderId, uuid.v1()); startDate = Date.now();
+                sessionIDs.set(senderId, uuid.v1()); 
+                startDate = Date.now();
             }
         } catch (error) {
             throw error;
@@ -104,6 +106,14 @@ let messengerRespository = {
                 this.sendGenericMessage(sender,result.cards);
                 this.sendTextMessage(sender,result.text);
                 break;
+            case "Estado5.Detalle.SeguirComprando.action":
+                this.sendMessageHandler(sender, await adicionarAlCarritoAction.handleAction(sender, response));
+                break;
+            /*            
+            case "Estado6.DetalleCarrito.action":
+                this.sendMessageHandler(sender, await detalleCarritoAction.handleAction(sender, response));
+                break;
+            */
             /*
             case "CompraPromociones.action":
                 this.sendMessageHandler(sender, await compraPromocionesAction.handleAction(sender, response));

@@ -22,7 +22,8 @@ let messenger = {
             "facebookName": userData.first_name + " " + userData.last_name,
             "profilePicture": userData.profile_pic,
         }, );
-        console.log("Se creo el usuerio", result);
+        console.log("Se creo el usuario", result);
+        console.log("SOY MESSENGER CONTROLLER");
     },
 
     async sendToDialogFlow(senderID, messageText) {

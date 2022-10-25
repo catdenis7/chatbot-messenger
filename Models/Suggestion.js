@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-var Session = mongoose.model("Session");
+//var Session = mongoose.model("Session");
 
 const SugestionSchema = new Schema(
   {

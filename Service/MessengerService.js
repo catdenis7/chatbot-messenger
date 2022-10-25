@@ -22,7 +22,7 @@ let messengerService = {
         });
 
         let sessionId = messengerRespository.getSessionIDs(facebookID);
-
+        console.log("SOY UN SESSION ID DE MESSENGER SERVICE =====>" + sessionId);
         let isNewSession = await sessionService.find({ sessionID: sessionId }) == null;
 
         if (isNewSession) {    
@@ -35,9 +35,11 @@ let messengerService = {
             );
             console.log("Se creo una nueva sesion", newSessionResult);
         }
+        console.log("result ===>" + result);
 
         // let sessionResult= sessionService.upsert({ sessionID : sessionId }, );
-        console.log("Se creo el usuerio", result);
+        console.log("Se creo el usuario", result);
+        console.log("SOY MESSENGER SERVICE");
     },
 
     async sendToDialogFlow(senderID, messageText) {
@@ -48,9 +50,11 @@ let messengerService = {
             let session = messengerRespository.getSessionIDs(senderID);
             result = await dialogflowService.processText(messageText, session, "FACEBOOK");
             messengerRespository.handleDialogFlowResponse(senderID, result);
+            let getProspect = await prospectService.find({facebookID: senderID});
             let sessionUpdate = await sessionService.upsert({ sessionID : session}, {
+                endDate : Date.now(),
                 payload : JSON.stringify(result),
-                endDate : Date.now()
+                prospect : getProspect._id,               
             });
 
         } catch (error) {

@@ -9,7 +9,6 @@ const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
 
 let informacionAction = {async handleAction(sender, response) {
-    console.log('\n\n\n\n\n\n\n\n' + response.parameters);
     if (response.allRequiredParamsPresent) {
         let queryBody = {
             "name": response["parameters"]["fields"]["albumes"]["stringValue"],
@@ -22,7 +21,7 @@ let informacionAction = {async handleAction(sender, response) {
         let presentation = Presentation;
         let price = Price;
         let offer = Offer;
-        let itemPrice;
+        let itemPrice = 500;
 
         let albumInfo = await album.findOne({ name: queryBody.name, artist: queryBody.artist });
         //console.log(product.album);
@@ -45,6 +44,12 @@ let informacionAction = {async handleAction(sender, response) {
             if (productInfo != null) {
                 let priceInfo = await price.findOne({ product: productInfo._id });
                 //console.log("PRICE INFO => " + priceInfo);
+                /*
+
+
+                CORREGIR CON LA NUEVA BASE DE DATOS
+
+
 
                 if (priceInfo.status) {
                     itemPrice = priceInfo.standardPrice;
@@ -57,10 +62,11 @@ let informacionAction = {async handleAction(sender, response) {
                         //console.log("ERROR: VERIFICAR STATUS DE PRICE Y OFFER");
                     }
                 }
+                */
                 let entryResult = await entryService.addEntry((sender), productInfo, null);
                 let postbackInfo = {
                     "product_id": productInfo._id,
-                    "session_id": sender,
+                    "session_id": sender,            
                     "postback": "DEVELOPER_DEFINED_CARRITO"
                 }
                 let cards = [
