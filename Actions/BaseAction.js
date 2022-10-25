@@ -11,6 +11,7 @@ let baseAction = {
         "IMAGE": 3,
         "QUICK": 4,
         "TEXT": 5,
+        //"RECEIPT": 6,
     },
 
     async handleAction(sender, response){},

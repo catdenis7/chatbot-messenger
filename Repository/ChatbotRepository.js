@@ -98,9 +98,10 @@ let chatbotRepository = {
                 console.log("SOY GETSESSION ===>" + getSession);
                 let getProspect = await prospectRepository.find({_id: getSession.prospect});
                 console.log("SOY GET PROSPECT ===>" + getProspect);
+                
                 let checkClient = await clientRepository.find({prospect: getProspect._id}, true);
                 console.log("SOY EL CHECKCLIENT ===> " + checkClient);
-                if (checkClient == null){
+                if (checkClient.length == 0){
                     await clientRepository.insert({
                         name: getProspect.facebookName,
                         lastName: null,
@@ -145,6 +146,16 @@ let chatbotRepository = {
                 }
                 await messengerService.sendToDialogFlow(senderId, payload);
                 break;
+            case "DEVELOPER_DEFINED_CONFIRMACION":
+                console.log('deserialized ===>' + deserialized.order_id);
+                getOrder = await orderRepository.find({_id:deserialized.order_id});
+                console.log('ORDER ===>' + getOrder);
+                let updateOrder = await orderRepository.upsert({_id: getOrder._id},{
+                    type: "O",
+                    total:deserialized.total,
+                }); 
+                await messengerService.sendToDialogFlow(senderId, payload);      
+            break;
           default:
             //unindentified payload
             await messengerService.sendToDialogFlow(senderId, payload);

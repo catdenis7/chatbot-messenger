@@ -12,6 +12,7 @@ const Presentation = require('../Models/Presentation');
 
 let adicionarAlCarritoAction = {async handleAction(sender, response) {
     let albumModel = Album;
+    let productModel = Product;
     let presentationModel = Presentation;
     let quantity = response["parameters"]["fields"]["number"]["numberValue"];
     //let getSession = await sessionRepository.find({sessionID: sender});
