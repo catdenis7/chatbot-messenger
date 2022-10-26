@@ -8,11 +8,14 @@ let datosClienteAction = {async handleAction(sender, response) {
     console.log("SOY DATOS CLIENTE");
     console.log("PARAMETERS => ");
     console.log(JSON.stringify(response.parameters));
+    console.log("CONDICION ====> " + response.allRequiredParamsPresent);
 
     if (!response.allRequiredParamsPresent) {
+        console.log("HOLA");
         return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
     }
     else {
+        console.log("CHAU");
         let queryBody = {
             "name": response["parameters"]["fields"]["person"]["structValue"]["fields"]["name"]["stringValue"],
             "lastName": response["parameters"]["fields"]["apellido"]["stringValue"],
@@ -35,15 +38,15 @@ let datosClienteAction = {async handleAction(sender, response) {
                 type: "C",            
             });
         }
-        /*
+        
         let result = {
             'image' : "https://img.freepik.com/vector-premium/icono-vector-muestra-codigo-qr-aislado-sobre-fondo-blanco_125869-2252.jpg?w=2000",
             'text' : "Escanee el siguiente QR para realizar el pago de su pedido y envíenos el comprobante de pago. Le notificaremos cuando la transacción haya sido completada.",
         } 
         
         return result;
-        */
-        return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
+        
+        //return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
     }
 }
 }

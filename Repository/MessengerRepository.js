@@ -130,7 +130,14 @@ let messengerRespository = {
                 this.sendMessageHandler(sender, await datosContactoAction.handleAction(sender, response));
                 break;
             case "Estado8.DatosCliente.action":
-                this.sendMessageHandler(sender, await datosClienteAction.handleAction(sender, response));
+                //this.sendMessageHandler(sender, await datosClienteAction.handleAction(sender, response));
+                result = await datosClienteAction.handleAction(sender, response);
+                if (result.text == null){
+                    await this.sendMessageHandler(sender, result);
+                    break;
+                }
+                await this.sendImageMessage(sender, result.image);
+                await this.sendTextMessage(sender, result.text);
                 break;
             case "Estado10.ValoracionCompra.action":
             case "Estado12.ValoracionNoCompra.action":
