@@ -26,8 +26,17 @@ let clientService = {
 
             let result = {};
             console.log('Getting Cards');
-            let prospects = this.toJson(await prospectRepository.find({}, true));
-
+            
+            let prospectContacts = this.toJson(await clientRepository.find({}, true));
+            let prospectId = [];
+            for (let index = 0; index < prospectContacts.length; index++) {
+                const element = prospectContacts[index];
+                prospectId.push((element.prospect));
+            }
+            console.log(prospectContacts);
+            let prospects = this.toJson(await prospectRepository.find({_id : {$nin : prospectId }}, true));
+            console.log(prospects)
+            
             for (let index = 0; index < prospects.length; index++) {
                 let prospect = prospects[index];
                 let sessionResult = await sessionRepository.find({ prospect: (prospect._id) }, true, { "createdAt": -1 });
@@ -36,21 +45,27 @@ let clientService = {
                     prospect.last_session = sessionResult[0].createdAt;
             }
 
-            let contacts = this.toJson(await clientRepository.find({ "prospect": { $in: prospects }, "status": "C" }, true));  //C de Customer
+            let prospectClients = this.toJson(await prospectRepository.find({_id : {$in : prospectId }}, true));
+
+            let contacts = this.toJson(await clientRepository.find({ "prospect": { $in: prospectClients }, "type": "C" }, true));  //C de Customer
 
             for (let index = 0; index < contacts.length; index++) {
                 let contact = contacts[index];
                 let contactResult = await contactRepository.find({ client: (contact._id) }, true, { "createdAt": -1 });
+                let prospect = await prospectRepository.find({_id : contact.prospect});
+                contact.profilePicture = prospect.profilePicture;
                 contact.contact_count = contactResult.length;
                 if (contactResult.length > 0)
                     contact.last_contact = contactResult[0].createdAt;
             }
 
-            let clients = this.toJson(await clientRepository.find({ "prospect": { $in: prospects }, "status": "P" }, true));   //P de Paying Customer
+            let clients = this.toJson(await clientRepository.find({ "prospect": { $in: prospectClients }, "type": "P" }, true));   //P de Paying Customer
 
             for (let index = 0; index < clients.length; index++) {
                 let client = clients[index];
                 let clientResult = await orderRepository.find({ client: (client._id) });
+                let prospect = await prospectRepository.find({_id : client.prospect});
+                client.profilePicture = prospect.profilePicture;
                 if (clientResult != null) {
                     let clientDetailResult = await orderDetailRepository.find({ order: clientResult }, true);
                     client.product_count = clientDetailResult.length;
@@ -58,11 +73,13 @@ let clientService = {
                 }
             }
 
-            let recurringClients = this.toJson(await clientRepository.find({ "prospect": { $in: prospects }, "status": "R" }, true));  //R de Recurring Customer
+            let recurringClients = this.toJson(await clientRepository.find({ "prospect": { $in: prospectClients }, "type": "R" }, true));  //R de Recurring Customer
 
             for (let index = 0; index < recurringClients.length; index++) {
                 let recurringClient = recurringClients[index];
                 let recurringClientResult = await orderRepository.find({ recurringClient: (recurringClient._id) }, true,{createdAt : -1});
+                let prospect = await prospectRepository.find({_id : recurringClient.prospect});
+                recurringClient.profilePicture = prospect.profilePicture;
                 if (recurringClient != null) {
                     let process = this.getFrequencyAndAverage(recurringClient);
                     recurringClient.frequency = process.frequency;

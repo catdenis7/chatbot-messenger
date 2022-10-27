@@ -16,6 +16,7 @@ const Offer = require("./Models/Offer");
 
 var app = express();
 let cors = require('cors');
+const orderController = require("./Controller/OrderController");
 
 require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -43,12 +44,13 @@ app.get("/webhook", (req, res) => chatbot.verification(req, res));
 // Todos eventos de mesenger seran capturados por esta ruta
 app.post("/webhook", (req, res) => chatbot.responseHandler(req, res));
 
-app.post("/dialogflow/send", async(req, res) => dialogflowApi.sendText(req, res));
+app.post("/dialogflow/send", async (req, res) => dialogflowApi.sendText(req, res));
 
 //  Servicios para pagina web
 
-app.get("/clients/cards", async(req, res) => clientController.getCards(req,res));
+app.get("/clients/cards", async (req, res) => clientController.getCards(req, res));
 
+app.post("/clients/orders", async (req, res) => orderController.getOrders(req, res));
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
     let body = req.body;
