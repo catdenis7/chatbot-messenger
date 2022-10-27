@@ -15,11 +15,12 @@ const Price = require("./Models/Price");
 const Offer = require("./Models/Offer");
 
 var app = express();
+let cors = require('cors');
 
 require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+app.use(cors({}))
 mongoose.connect(
     String(process.env.MONGODB_URL),
     (err, res) => {
