@@ -73,6 +73,8 @@ app.post("/product", (req, res) => {
     let body = req.body;
     let product = new Product({
         image: body.image,
+        description: body.description,
+        price: body.price,
         album: body.album,
         presentation: body.presentation,
     });
@@ -104,10 +106,13 @@ app.post("/presentation", (req, res) => {
 app.post("/price", (req, res) => {
     let body = req.body;
     let price = new Price({
-        standardPrice: body.standardPrice,
+        basePrice: body.basePrice,
+        salesPrice: body.salesPrice,
         description: body.description,
-        status: body.status,
+        fromDate: body.fromDate,
+        toDate: body.toDate,
         product: body.product,
+        offer: body.offer,
     });
     price.save((err, priceDB) => {
         if (err) return res.json({ ok: false, msg: "Error" });
