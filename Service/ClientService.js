@@ -33,9 +33,9 @@ let clientService = {
                 const element = prospectContacts[index];
                 prospectId.push((element.prospect));
             }
-            console.log(prospectContacts);
+            // console.log(prospectContacts);
             let prospects = this.toJson(await prospectRepository.find({ _id: { $nin: prospectId } }, true));
-            console.log(prospects)
+            // console.log(prospects)
 
             for (let index = 0; index < prospects.length; index++) {
                 let prospect = prospects[index];
@@ -121,7 +121,7 @@ let clientService = {
         while (connected) {
             await new Promise(resolve => setTimeout(resolve, 800));
             res.write('event: message\n');  // message event
-            res.write('data: hello!');
+            res.write('data: ' + JSON.stringify(await this.getCards()));
             res.write("\n\n");
         }
         console.log('Conexion cerrada');
