@@ -1,10 +1,9 @@
 let clientRepository = require('../Repository/ClientRepository');
 let prospectRepository = require('../Repository/ProspectRepository');
 const sessionRepository = require('../Repository/SessionRepository');
-const contactRepository = require('../Repository/ContactRepository')
-const { ObjectId } = require('mongodb');
 const orderDetailRepository = require('../Repository/OrderDetailRepository');
 const orderRepository = require('../Repository/OrderRepository');
+const contactRepository = require('../Repository/ContactRepository');
 let clientService = {
 
     async find(query, many = false) {
@@ -150,7 +149,21 @@ let clientService = {
             average: average,
         }
 
+    },
+
+    async getContacts(req, res) {
+        console.log("Getting Contacts");
+        let clientId = req.body.clientId;
+        let contacts = await contactRepository.find(
+            { client: clientId },
+            true,
+            null,
+            ['client', 'contactMethod'],
+        );
+        console.log(contacts);
+        return contacts;
     }
+
 }
 
 module.exports = clientService;

@@ -2,7 +2,6 @@ var chatbot = require("./Controller/ChatbotController");
 const mongoose = require('mongoose');
 var dialogflowApi = require("./Controller/DialogflowController");
 
-let clientController = require("./Controller/ClientController");
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -16,7 +15,10 @@ const Offer = require("./Models/Offer");
 
 var app = express();
 let cors = require('cors');
+let clientController = require("./Controller/ClientController");
+let contactController = require("./Controller/ContactController");
 const orderController = require("./Controller/OrderController");
+const ContactMethod = require("./Models/ContactMethod");
 
 require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -51,6 +53,8 @@ app.post("/dialogflow/send", async (req, res) => dialogflowApi.sendText(req, res
 app.get("/clients/cards", async (req, res) => clientController.getCards(req, res));
 
 app.post("/clients/orders", async (req, res) => orderController.getOrders(req, res));
+
+app.post("/clients/contacts", async (req, res) => await contactController.getContacts(req, res));
 
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req,res));
 
@@ -93,8 +97,8 @@ app.post("/product", (req, res) => {
 
 app.post("/presentation", (req, res) => {
     let body = req.body;
-    let presentation = new Presentation({
-        type: body.type,
+    let presentation = new ContactMethod({
+        description: body.type,
     });
     presentation.save((err, presentationDB) => {
         if (err) return res.json({ ok: false, msg: "Error" });
