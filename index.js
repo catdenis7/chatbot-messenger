@@ -51,6 +51,9 @@ app.post("/dialogflow/send", async (req, res) => dialogflowApi.sendText(req, res
 app.get("/clients/cards", async (req, res) => clientController.getCards(req, res));
 
 app.post("/clients/orders", async (req, res) => orderController.getOrders(req, res));
+
+app.get('/dashboard/notification', async (req, res) => await clientController.notification(req,res));
+
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
     let body = req.body;
