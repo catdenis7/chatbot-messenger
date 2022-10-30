@@ -7,7 +7,7 @@ let orderDetailRepository = {
         let result;
         if (many)
             if(sort != null)
-                result = await orderDetail.find(query)//.sort(sort);
+                result = await orderDetail.find(query).sort(sort);
             else
                 result = await orderDetail.find(query);
         else

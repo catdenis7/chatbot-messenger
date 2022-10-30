@@ -7,7 +7,7 @@ let productRepository = {
         let result;
         if (many)
             if(sort != null)
-                result = await product.find(query)//.sort(sort);
+                result = await product.find(query).sort(sort);
             else
                 result = await product.find(query);
         else

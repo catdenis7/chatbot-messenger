@@ -7,7 +7,7 @@ let contactRepository = {
         let result;
         if (many)
             if(sort != null)
-                result = await contact.find(query)//.sort(sort);
+                result = await contact.find(query).sort(sort);
             else
                 result = await contact.find(query);
         else
