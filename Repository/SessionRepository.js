@@ -7,7 +7,7 @@ let sessionRepository = {
         let result;
         if (many)
             if(sort != null)
-                result = await session.find(query)//.sort(sort);
+                result = await session.find(query).sort(sort);
             else
                 result = await session.find(query);
         else

@@ -1,15 +1,15 @@
 const Contact = require('../Models/Contact');
 
 let contactRepository = {
-    async find(query, many = false,sort) {
+    async find(query, many = false,sort,populate) {
         const contact = Contact;
 
         let result;
         if (many)
             if(sort != null)
-                result = await contact.find(query)//.sort(sort);
+                result = await contact.find(query).populate(populate).sort(sort); 
             else
-                result = await contact.find(query);
+                result = await contact.find(query).populate(populate);
         else
             result = await contact.findOne(query);
 

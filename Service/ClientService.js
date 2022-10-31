@@ -1,10 +1,9 @@
 let clientRepository = require('../Repository/ClientRepository');
 let prospectRepository = require('../Repository/ProspectRepository');
 const sessionRepository = require('../Repository/SessionRepository');
-const contactRepository = require('../Repository/ContactRepository')
-const { ObjectId } = require('mongodb');
 const orderDetailRepository = require('../Repository/OrderDetailRepository');
 const orderRepository = require('../Repository/OrderRepository');
+const contactRepository = require('../Repository/ContactRepository');
 let clientService = {
 
     async find(query, many = false) {
@@ -121,7 +120,7 @@ let clientService = {
         while (connected) {
             await new Promise(resolve => setTimeout(resolve, 800));
             res.write('event: message\n');  // message event
-            res.write('data: hello!');
+            res.write('data: ' + JSON.stringify(await this.getCards()));
             res.write("\n\n");
         }
         console.log('Conexion cerrada');
@@ -150,7 +149,21 @@ let clientService = {
             average: average,
         }
 
+    },
+
+    async getContacts(req, res) {
+        console.log("Getting Contacts");
+        let clientId = req.body.clientId;
+        let contacts = await contactRepository.find(
+            { client: clientId },
+            true,
+            null,
+            ['client', 'contactMethod'],
+        );
+        console.log(contacts);
+        return contacts;
     }
+
 }
 
 module.exports = clientService;
