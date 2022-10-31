@@ -14,6 +14,7 @@ let adicionarAlCarritoAction = require('../Actions/AdicionarAlCarritoAction');
 let detalleCarritoAction = require('../Actions/DetalleCarritoAction');
 let filtrarClienteExistenteAction = require('../Actions/FiltrarClienteExistente');
 let mostrarMetodoDePagoAction = require('../Actions/MostrarMetodoDePagoAction');
+let productosArtistaAction = require('../Actions/ProductosArtistaAction');
 
 const sessionIDs = new Map();
 
@@ -143,6 +144,9 @@ let messengerRespository = {
                 break;
             case "Estado18.ProductosEnPromocion.action":
                 this.sendMessageHandler(sender, await eleccionPromoAction.handleAction(this.getSessionIDs(sender), response));
+                break;
+            case "Estado25.ProductosArtista.action":
+                this.sendMessageHandler(sender, await productosArtistaAction.handleAction(this.getSessionIDs(sender), response));
                 break;
             case "Estado26.Promociones.action":
                 console.error(response.action);

@@ -86,6 +86,7 @@ let chatbotRepository = {
         console.log("SOY EL SENDER RECEIVE ===> " +senderId);
         console.log("SOY EL PAYLOAD ===> " +payload);
         switch (command) {
+            case "DEVELOPER_DEFINED_CARRITO_ARTISTA":
             case "DEVELOPER_DEFINED_CARRITO_ESTADO19":
             case "DEVELOPER_DEFINED_CARRITO_PROMO":
             case "DEVELOPER_DEFINED_CARRITO":
@@ -94,14 +95,9 @@ let chatbotRepository = {
                 console.log('PRODUCT CARRITO ===>' + product);
                 let queryOrderDetail;
                 let queryOrder;
-
                 let getSession = await sessionRepository.find({ sessionID: sessionId });
-                console.log("SOY GETSESSION ===>" + getSession);
                 let getProspect = await prospectRepository.find({ _id: getSession.prospect });
-                console.log("SOY GET PROSPECT ===>" + getProspect);
-
                 let checkClient = await clientRepository.find({ prospect: getProspect._id }, true);
-                console.log("SOY EL CHECKCLIENT ===> " + checkClient);
                 if (checkClient.length == 0) {
                     await clientRepository.insert({
                         name: getProspect.facebookName,
@@ -113,9 +109,8 @@ let chatbotRepository = {
                     });
                 }
                 let getClient = await clientRepository.find({ prospect: getProspect._id });
-                console.log("SOY GET CLIENT ===>" + getClient);
                 let checkOrder = await orderRepository.find({ type: "C", client: getClient._id });
-                console.log("SOY GET CHECK ORDER ===>" + checkOrder);
+
                 if (checkOrder == null) {
                     queryOrder = {
                         "date": Date.now(),
@@ -159,22 +154,18 @@ let chatbotRepository = {
                 let clientVerification = await clientRepository.find({ _id: getOrder.client, lastName: null, phoneNumber: null, email: null });
                 if (clientVerification != null) {
                     await messengerService.sendToDialogFlow(senderId, payload);
-                    console.log("EL CLIENTE NO TIENE INFORMACION");
                 } else {
-                    console.log("DEBO IR AL ESTADO 31");
                     await messengerService.sendToDialogFlow(senderId, "DEVELOPER_DEFINED_CONFIRMACION_CLIENTE_EXISTENTE");
                 }
                 break;              
             case "DEVELOPER_DEFINED_ACTUALIZAR_INFORMACION":
-                console.log("MARACUYA PAYLOAD");
-                await messengerService.sendToDialogFlow(senderId, "DEVELOPER_DEFINED_ACTUALIZAR_INFORMACION");
+                await messengerService.sendToDialogFlow(senderId, payload);
                 break;
             case "DEVELOPER_DEFINED_CONTINUAR":
                 await messengerService.sendToDialogFlow(senderId, payload);
                 break;
             default:
                 //unindentified payload
-                console.log("UNDEFINED PAYLOAD");
                 await messengerService.sendToDialogFlow(senderId, payload);
                 break;
         }
