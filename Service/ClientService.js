@@ -33,9 +33,9 @@ let clientService = {
                 const element = prospectContacts[index];
                 prospectId.push((element.prospect));
             }
-            console.log(prospectContacts);
+            // console.log(prospectContacts);
             let prospects = this.toJson(await prospectRepository.find({ _id: { $nin: prospectId } }, true));
-            console.log(prospects)
+            // console.log(prospects)
 
             for (let index = 0; index < prospects.length; index++) {
                 let prospect = prospects[index];

@@ -1,16 +1,14 @@
 const baseAction = require('./BaseAction');
-const clientService = require('../Service/ClientService');
-const Prospect = require("../Models/Prospect");
+const sessionService = require('../Service/SessionService');
 
 let valoracionCompraAction = {async handleAction(sender, response) {
     if (response.allRequiredParamsPresent) {
         let queryBody = {
             "number": response["parameters"]["fields"]["number"]["numberValue"],
         }
-        let prospect = Prospect;
 
-        let prospectInfo = await prospect.findOne({ $facebookID: sender });
-        sessionService.upsert({ sessionID: sender}, {
+        console.log("who am i ===> " + sender);
+        sessionService.upsert({ sessionID: sender, score: null, endDate: null}, {
             score: queryBody.number,
             endDate: Date.now(),
         });

@@ -1,5 +1,4 @@
 const baseAction = require('./BaseAction');
-const clientService = require('../Service/ClientService');
 const prospectRepository = require('../Repository/ProspectRepository');
 const clientRepository = require('../Repository/ClientRepository');
 const orderRepository = require('../Repository/OrderRepository');
@@ -11,31 +10,27 @@ let datosClienteAction = {async handleAction(sender, response) {
     console.log("CONDICION ====> " + response.allRequiredParamsPresent);
 
     if (!response.allRequiredParamsPresent) {
-        console.log("HOLA");
         return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
     }
     else {
-        console.log("CHAU");
         let queryBody = {
             "name": response["parameters"]["fields"]["person"]["structValue"]["fields"]["name"]["stringValue"],
             "lastName": response["parameters"]["fields"]["apellido"]["stringValue"],
             "phoneNumber": response["parameters"]["fields"]["phone-number"]["stringValue"],
             "email": response["parameters"]["fields"]["email"]["stringValue"]
         }
-        let prospectQuery = {
-            "facebookID": sender
-        }
+     
         let getProspect = await prospectRepository.find({facebookID: sender});
         //console.log("SOY GET PROSPECT ===>" + getProspect);
         let getClient = await clientRepository.find({prospect: getProspect._id});
         let matchOrder = await orderRepository.find({client: getClient._id, type: "O"});
         if (matchOrder != null){
-            let clientUpdate = await clientRepository.upsert({ _id : matchOrder.client}, {
+            await clientRepository.upsert({ _id : matchOrder.client}, {
                 name: queryBody.name,
                 lastName: queryBody.lastName,
                 phoneNumber: queryBody.phoneNumber, 
                 email: queryBody.email,
-                type: "C",            
+                type: "P",            
             });
         }
         
@@ -45,8 +40,6 @@ let datosClienteAction = {async handleAction(sender, response) {
         } 
         
         return result;
-        
-        //return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
     }
 }
 }

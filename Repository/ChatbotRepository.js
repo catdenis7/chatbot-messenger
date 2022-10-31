@@ -31,9 +31,14 @@ let chatbotRepository = {
             console.log("MENSAJE DEL USUARIO: ", message.text);
             await messengerService.sendToDialogFlow(senderID, message.text);
             /* var response = {
-                 text: dialogFlowResponse,
+                 text: dialogFlowResponse,             
              };
              */
+        } else if (message.attachments) {
+            // Conseguir la URL del mensaje
+            //let attachment_url = received_message.attachments[0].payload.url;
+            console.log("MENSAJE DEL USUARIO: ", "DEVELOPER_DEFINED_COMPROBANTE");
+            await messengerService.sendToDialogFlow(senderID, "DEVELOPER_DEFINED_COMPROBANTE");
         }
 
         // Enviamos el mensaje mediante SendAPI
@@ -52,11 +57,11 @@ let chatbotRepository = {
 
         // Enviar el requisito HTTP a la plataforma de messenger
         request({
-                uri: process.env.FACEBOOK_API_URL + "/me/messages",
-                qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
-                method: "POST",
-                json: request_body,
-            },
+            uri: process.env.FACEBOOK_API_URL + "/me/messages",
+            qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+            method: "POST",
+            json: request_body,
+        },
             (err, res, body) => {
                 if (!err) {
                     console.log("Mensaje enviado!");
@@ -72,36 +77,30 @@ let chatbotRepository = {
         var recipientID = event.recipient.id;
         var timeOfPostback = event.timestamp;
         var payload = event.postback.payload;
-                let deserialized = JSON.parse(payload);
-                let command = deserialized.postback;
-                let sessionId = deserialized.session_id;
-                let productModel;
-                let product;
+        let deserialized = JSON.parse(payload);
+        let command = deserialized.postback;
+        let sessionId = deserialized.session_id;
+        let productModel;
+        let product;
 
-        console.log(payload);
+        console.log("SOY EL SENDER RECEIVE ===> " +senderId);
+        console.log("SOY EL PAYLOAD ===> " +payload);
         switch (command) {
-            case "DEVELOPER_DEFINED_COMPRA":
-                productModel = Product;
-                product = await productModel.findById(deserialized.product_id);
-                console.log('PRODUCT ===>' + product);
-                await entryService.addEntry(sessionId,product,null)
-                await messengerService.sendToDialogFlow(senderId, payload);
-                break;
             case "DEVELOPER_DEFINED_CARRITO":
                 productModel = Product;
                 product = await productModel.findById(deserialized.product_id);
                 console.log('PRODUCT CARRITO ===>' + product);
                 let queryOrderDetail;
                 let queryOrder;
-              
-                let getSession = await sessionRepository.find({sessionID: sessionId});
+
+                let getSession = await sessionRepository.find({ sessionID: sessionId });
                 console.log("SOY GETSESSION ===>" + getSession);
-                let getProspect = await prospectRepository.find({_id: getSession.prospect});
+                let getProspect = await prospectRepository.find({ _id: getSession.prospect });
                 console.log("SOY GET PROSPECT ===>" + getProspect);
-                
-                let checkClient = await clientRepository.find({prospect: getProspect._id}, true);
+
+                let checkClient = await clientRepository.find({ prospect: getProspect._id }, true);
                 console.log("SOY EL CHECKCLIENT ===> " + checkClient);
-                if (checkClient.length == 0){
+                if (checkClient.length == 0) {
                     await clientRepository.insert({
                         name: getProspect.facebookName,
                         lastName: null,
@@ -111,15 +110,15 @@ let chatbotRepository = {
                         prospect: getProspect._id,
                     });
                 }
-                let getClient = await clientRepository.find({prospect: getProspect._id});
+                let getClient = await clientRepository.find({ prospect: getProspect._id });
                 console.log("SOY GET CLIENT ===>" + getClient);
-                let checkOrder = await orderRepository.find({type: "C", client: getClient._id});
+                let checkOrder = await orderRepository.find({ type: "C", client: getClient._id });
                 console.log("SOY GET CHECK ORDER ===>" + checkOrder);
-                if (checkOrder == null){
+                if (checkOrder == null) {
                     queryOrder = {
                         "date": Date.now(),
                         "type": "C",
-                        "status":"ABIERTO",
+                        "status": "ABIERTO",
                         "total": null,
                         "client": getClient._id,
                     }
@@ -130,7 +129,7 @@ let chatbotRepository = {
                         "detailTotal": null,
                         "order": result._id,
                         "product": product._id,
-    
+
                     }
                     await orderDetailRepository.insert(queryOrderDetail);
                 } else {
@@ -140,7 +139,7 @@ let chatbotRepository = {
                         "detailTotal": null,
                         "order": checkOrder._id,
                         "product": product._id,
-    
+
                     }
                     await orderDetailRepository.insert(queryOrderDetail);
                 }
@@ -148,28 +147,44 @@ let chatbotRepository = {
                 break;
             case "DEVELOPER_DEFINED_CONFIRMACION":
                 console.log('deserialized ===>' + deserialized.order_id);
-                getOrder = await orderRepository.find({_id:deserialized.order_id});
+                let getOrder = await orderRepository.find({ _id: deserialized.order_id });
                 console.log('ORDER ===>' + getOrder);
-                let updateOrder = await orderRepository.upsert({_id: getOrder._id},{
+                await orderRepository.upsert({ _id: getOrder._id }, {
                     type: "O",
-                    total:deserialized.total,
-                }); 
-                await messengerService.sendToDialogFlow(senderId, payload);      
-            break;
-          default:
-            //unindentified payload
-            await messengerService.sendToDialogFlow(senderId, payload);
-            break;
+                    total: deserialized.total,
+                });
+                let clientVerification = await clientRepository.find({ _id: getOrder.client, lastName: null, phoneNumber: null, email: null });
+                if (clientVerification != null) {
+                    await messengerService.sendToDialogFlow(senderId, payload);
+                    console.log("EL CLIENTE NO TIENE INFORMACION");
+                } else {
+                    console.log("DEBO IR AL ESTADO 31");
+                    await messengerService.sendToDialogFlow(senderId, "DEVELOPER_DEFINED_CONFIRMACION_CLIENTE_EXISTENTE");
+                }
+                break;
+               
+            case "DEVELOPER_DEFINED_ACTUALIZAR_INFORMACION":
+                console.log("MARACUYA PAYLOAD");
+                await messengerService.sendToDialogFlow(senderId, "DEVELOPER_DEFINED_ACTUALIZAR_INFORMACION");
+                break;
+            case "DEVELOPER_DEFINED_CONTINUAR":
+                await messengerService.sendToDialogFlow(senderId, payload);
+                break;
+            default:
+                //unindentified payload
+                console.log("UNDEFINED PAYLOAD");
+                await messengerService.sendToDialogFlow(senderId, payload);
+                break;
         }
-      
+
         console.log(
-          "Received postback for user %d and page %d with payload '%s' " + "at %d",
-          senderId,
-          recipientID,
-          payload,
-          timeOfPostback
+            "Received postback for user %d and page %d with payload '%s' " + "at %d",
+            senderId,
+            recipientID,
+            payload,
+            timeOfPostback
         );
-      }
+    }
 }
 
 module.exports = chatbotRepository;

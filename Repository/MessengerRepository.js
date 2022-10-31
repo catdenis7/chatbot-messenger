@@ -13,6 +13,8 @@ let eleccionPromoAction = require('../Actions/EleccionPromoAction');
 let promocionesAction = require('../Actions/PromocionesAction');
 let adicionarAlCarritoAction = require('../Actions/AdicionarAlCarritoAction');
 let detalleCarritoAction = require('../Actions/DetalleCarritoAction');
+let filtrarClienteExistenteAction = require('../Actions/FiltrarClienteExistente');
+let mostrarMetodoDePagoAction = require('../Actions/MostrarMetodoDePagoAction');
 
 const sessionIDs = new Map();
 
@@ -25,7 +27,7 @@ let messengerRespository = {
     async setSessionAndUser(senderId) {
         try {
             if (!sessionIDs.has(senderId)) {
-                sessionIDs.set(senderId, uuid.v1()); 
+                sessionIDs.set(senderId, uuid.v1());
                 startDate = Date.now();
             }
         } catch (error) {
@@ -96,30 +98,29 @@ let messengerRespository = {
 
     async handleDialogFlowAction(sender, response) {
         let result;
-        console.log("\n\n\n\n\n\n\n" + response.action +"\n\n\n\n\n\n")
+        console.log("\n\n\n\n\n\n\n" + response.action + "\n\n\n\n\n\n")
         switch (response.action) {
             case "Estado2.Informacion.action":
-                console.warn("\n\n\n\n\n\n ACTION!!!!!\n\n\n\n\n\n\n\n")
                 result = await informacionAction.handleAction(this.getSessionIDs(sender), response);
-                if(result.cards == null){
-                    this.sendMessageHandler(sender,result);
-                    break;
-                }
-                await this.sendTextMessage(sender,result.text);
-                await this.sendGenericMessage(sender,result.cards);               
-                break;
-            case "Estado5.Detalle.SeguirComprando.action":
-                this.sendMessageHandler(sender, await adicionarAlCarritoAction.handleAction(sender, response));
-                break;            
-            case "Estado6.DetalleCarrito.action":
-                result = await detalleCarritoAction.handleAction(sender, response);
-                if(result.buttons == null){
+                if (result.cards == null) {
                     this.sendMessageHandler(sender, result);
                     break;
                 }
                 await this.sendTextMessage(sender, result.text);
-                await this.sendButtonMessage(sender, result.buttons.text,result.buttons.buttons);
-               
+                await this.sendGenericMessage(sender, result.cards);
+                break;
+            case "Estado5.Detalle.SeguirComprando.action":
+                this.sendMessageHandler(sender, await adicionarAlCarritoAction.handleAction(sender, response));
+                break;
+            case "Estado6.DetalleCarrito.action":
+                result = await detalleCarritoAction.handleAction(sender, response);
+                if (result.buttons == null) {
+                    this.sendMessageHandler(sender, result);
+                    break;
+                }
+                await this.sendTextMessage(sender, result.text);
+                await this.sendButtonMessage(sender, result.buttons.text, result.buttons.buttons);
+
                 break;
             /*
             case "CompraPromociones.action":
@@ -127,12 +128,11 @@ let messengerRespository = {
                 break;
             */
             case "Estado14.DatosCliente.action":
-                this.sendMessageHandler(sender, await datosContactoAction.handleAction(sender, response));
+                await this.sendMessageHandler(sender, await datosContactoAction.handleAction(sender, response));
                 break;
             case "Estado8.DatosCliente.action":
-                //this.sendMessageHandler(sender, await datosClienteAction.handleAction(sender, response));
                 result = await datosClienteAction.handleAction(sender, response);
-                if (result.text == null){
+                if (result.text == null) {
                     await this.sendMessageHandler(sender, result);
                     break;
                 }
@@ -144,7 +144,7 @@ let messengerRespository = {
             //case "EstadoV3.MostrarPromos.action":
             case "Estado9V.ValoracionPromo.action":
             case "Estado17.Valoracion.action":
-            //case "Estado8V.ValoracionPromo.action":
+                //case "Estado8V.ValoracionPromo.action":
                 this.sendMessageHandler(sender, await valoracionCompraAction.handleAction(this.getSessionIDs(sender), response));
                 break;
             case "Estado18.ProductosEnPromocion.action":
@@ -164,6 +164,24 @@ let messengerRespository = {
                     },
                 ]);
                 break;
+            case "Estado31.ClienteExistente.action":
+                result = await filtrarClienteExistenteAction.handleAction(sender, response);
+                if (result.buttons == null) {
+                    this.sendMessageHandler(sender, result);
+                    break;
+                }
+                await this.sendButtonMessage(sender, result.text, result.buttons);
+                break;
+            case "Estado31.ClienteExistenteB.action":
+                result = await mostrarMetodoDePagoAction.handleAction(sender, response);
+                if (result.text == null) {
+                    await this.sendMessageHandler(sender, result);
+                    break;
+                }
+                await this.sendImageMessage(sender, result.image);
+                await this.sendTextMessage(sender, result.text);
+                break;
+
             default:
                 await this.sendTextMessage(sender, response.fulfillmentText);
                 break;
@@ -265,11 +283,11 @@ let messengerRespository = {
                 this.sendQuickReply(sender, result.data);
                 break;
             case 5:
-                /*
-                this.sendGenericReceiptMessage(sender, result.data);
-                break;
-            case 6:
-                */
+            /*
+            this.sendGenericReceiptMessage(sender, result.data);
+            break;
+        case 6:
+            */
             default:
                 this.sendTextMessage(sender, result.data);
                 break;
@@ -357,7 +375,7 @@ let messengerRespository = {
                 method: "POST",
                 json: messageData,
             },
-                function(error, response, body) {
+                function (error, response, body) {
                     if (!error && response.statusCode == 200) {
                         var recipientId = body.recipient_id;
                         var messageId = body.message_id;
@@ -443,26 +461,26 @@ let messengerRespository = {
 
         await this.callSendAPI(messageData);
     },
-/*
-    async sendGenericReceiptMessage(recipientId, elements) {
-        var messageData = {
-            recipient: {
-                id: recipientId,
-            },
-            message: {
-                attachment: {
-                    type: "template",
-                    payload: {
-                        template_type: "receipt",
-                        elements: elements,
+    /*
+        async sendGenericReceiptMessage(recipientId, elements) {
+            var messageData = {
+                recipient: {
+                    id: recipientId,
+                },
+                message: {
+                    attachment: {
+                        type: "template",
+                        payload: {
+                            template_type: "receipt",
+                            elements: elements,
+                        },
                     },
                 },
-            },
-        };
-
-        await this.callSendAPI(messageData);
-    },
-    */
+            };
+    
+            await this.callSendAPI(messageData);
+        },
+        */
 }
 
 
