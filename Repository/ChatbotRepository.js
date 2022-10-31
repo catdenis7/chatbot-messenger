@@ -86,6 +86,8 @@ let chatbotRepository = {
         console.log("SOY EL SENDER RECEIVE ===> " +senderId);
         console.log("SOY EL PAYLOAD ===> " +payload);
         switch (command) {
+            case "DEVELOPER_DEFINED_CARRITO_ESTADO19":
+            case "DEVELOPER_DEFINED_CARRITO_PROMO":
             case "DEVELOPER_DEFINED_CARRITO":
                 productModel = Product;
                 product = await productModel.findById(deserialized.product_id);
@@ -146,6 +148,7 @@ let chatbotRepository = {
                 await messengerService.sendToDialogFlow(senderId, payload);
                 break;
             case "DEVELOPER_DEFINED_CONFIRMACION":
+            case "DEVELOPER_DEFINED_CONFIRMACION_PROMO":
                 console.log('deserialized ===>' + deserialized.order_id);
                 let getOrder = await orderRepository.find({ _id: deserialized.order_id });
                 console.log('ORDER ===>' + getOrder);
@@ -161,8 +164,7 @@ let chatbotRepository = {
                     console.log("DEBO IR AL ESTADO 31");
                     await messengerService.sendToDialogFlow(senderId, "DEVELOPER_DEFINED_CONFIRMACION_CLIENTE_EXISTENTE");
                 }
-                break;
-               
+                break;              
             case "DEVELOPER_DEFINED_ACTUALIZAR_INFORMACION":
                 console.log("MARACUYA PAYLOAD");
                 await messengerService.sendToDialogFlow(senderId, "DEVELOPER_DEFINED_ACTUALIZAR_INFORMACION");

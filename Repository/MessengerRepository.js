@@ -110,9 +110,11 @@ let messengerRespository = {
                 await this.sendGenericMessage(sender, result.cards);
                 break;
             case "Estado5.Detalle.SeguirComprando.action":
+            case "Estado20.SeguirComprandoDetalleNoDisponible.action":
                 this.sendMessageHandler(sender, await adicionarAlCarritoAction.handleAction(sender, response));
                 break;
             case "Estado6.DetalleCarrito.action":
+            case "Estado22.DetalleCarritoNoDisponible.action":
                 result = await detalleCarritoAction.handleAction(sender, response);
                 if (result.buttons == null) {
                     this.sendMessageHandler(sender, result);
@@ -148,7 +150,7 @@ let messengerRespository = {
                 this.sendMessageHandler(sender, await valoracionCompraAction.handleAction(this.getSessionIDs(sender), response));
                 break;
             case "Estado18.ProductosEnPromocion.action":
-                this.sendMessageHandler(sender, await eleccionPromoAction.handleAction(sender, response));
+                this.sendMessageHandler(sender, await eleccionPromoAction.handleAction(this.getSessionIDs(sender), response));
                 break;
             case "Estado26.Promociones.action":
                 console.error(response.action);

@@ -3,10 +3,11 @@ const clientService = require('../Service/ClientService');
 const entryService = require('../Service/EntryService');
 
 const Album = require("../Models/Album");
-const Product = require("../Models/Product");
 const Presentation = require("../Models/Presentation");
-const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
+
+const productRepository = require("../Repository/ProductRepository");
+const priceRepository = require("../Repository/PriceRepository");
 
 let informacionAction = {async handleAction(sender, response) {
     if (response.allRequiredParamsPresent) {
@@ -17,11 +18,9 @@ let informacionAction = {async handleAction(sender, response) {
         }
 
         let album = Album;
-        let product = Product;
         let presentation = Presentation;
-        let price = Price;
         let offer = Offer;
-        let itemPrice = 500;
+        let itemPrice;
 
         let albumInfo = await album.findOne({ name: queryBody.name, artist: queryBody.artist });
         //console.log(product.album);
@@ -39,30 +38,35 @@ let informacionAction = {async handleAction(sender, response) {
 
         let itemExists = nameCheck && artistCheck && presentationCheck;
         if (itemExists) {
-            let productInfo = await product.findOne({ album: albumInfo._id, presentation: presentationInfo._id });
+            let productInfo = await productRepository.find({ album: albumInfo._id, presentation: presentationInfo._id });
             //console.log("product info ===> " + productInfo);
             if (productInfo != null) {
-                let priceInfo = await price.findOne({ product: productInfo._id });
-                //console.log("PRICE INFO => " + priceInfo);
-                /*
-
-
-                CORREGIR CON LA NUEVA BASE DE DATOS
-
-
-
-                if (priceInfo.status) {
-                    itemPrice = priceInfo.standardPrice;
+                let priceInfo = await priceRepository.find({ _id: productInfo.price});
+                console.log("PRICE INFO => " + priceInfo);
+             
+                if (priceInfo.offer == null) {
+                    itemPrice = priceInfo.basePrice;
+                    await priceRepository.upsert({_id: priceInfo._id}, {
+                        salesPrice: itemPrice,
+                    });
                 } else {
-                    let offerInfo = await offer.findOne({ price: priceInfo._id });
+                    let offerInfo = await offer.findOne({ _id: priceInfo.offer});
                     //console.log("OFFER INFO => " + offerInfo);
                     if (offerInfo.status) {
-                        itemPrice = priceInfo.standardPrice - (priceInfo.standardPrice * (offerInfo.discount / 100));
+                        itemPrice = priceInfo.basePrice - (priceInfo.basePrice * (offerInfo.discount / 100));
+                        console.log("SOY EL PRECIO DEL DESCUENTO ===>" +itemPrice);
+                        await priceRepository.upsert({_id: priceInfo._id}, {
+                            salesPrice: itemPrice,
+                        });
+                        console.log("PRICE DESCUENTO => " + priceInfo.salesPrice);
                     } else {
-                        //console.log("ERROR: VERIFICAR STATUS DE PRICE Y OFFER");
+                        itemPrice = priceInfo.basePrice;
+                        await priceRepository.upsert({_id: priceInfo._id}, {
+                            salesPrice: itemPrice,
+                        });
                     }
                 }
-                */
+                
                 let entryResult = await entryService.addEntry((sender), productInfo, null);
                 let postbackInfo = {
                     "product_id": productInfo._id,
@@ -88,7 +92,6 @@ let informacionAction = {async handleAction(sender, response) {
                     'text' : 'si lo tenemos disponible ¿deseas realizar un pedido?'
                 }
                 return result;
-                // return baseaction.response(baseaction.codes.text, "si lo tenemos disponible ¿deseas realizar un pedido?");
             } else {
                 let entryResult = await entryService.addEntry((sender), null, queryBody);
                 return baseAction.response(baseAction.codes.TEXT, "Disculpa, pero no tenemos ese ejemplar disponible. Puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Cual es su nombre? 😄");
@@ -100,7 +103,6 @@ let informacionAction = {async handleAction(sender, response) {
     } else {
         return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
     }
-    return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
 }
 }
 module.exports = informacionAction; 

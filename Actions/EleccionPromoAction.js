@@ -1,18 +1,18 @@
 const baseAction = require('./BaseAction');
+
+const productRepository = require("../Repository/ProductRepository");
+const priceRepository = require("../Repository/PriceRepository");
+
 const Album = require("../Models/Album");
-const Product = require("../Models/Product");
 const Presentation = require("../Models/Presentation");
-const Price = require("../Models/Price");
 const Offer = require("../Models/Offer");
 
 let eleccionPromoAction = {async handleAction(sender, response) {
     let offer = Offer;
-    let price = Price;
-    let product = Product;
     let album = Album;
     let presentation = Presentation;
     let offerInfo = await offer.find({ status: "true" });
-    console.log("SOY OOFER  INF===> " + offerInfo);
+    console.log("SOY PROMOCIONES!!!!!  INF===> " + offerInfo);
     let card = [];
     if (offerInfo.length == 0) {
         return baseAction.response(baseAction.codes.TEXT, "Por el momento, no tenemos promociones disponibles");
@@ -20,24 +20,27 @@ let eleccionPromoAction = {async handleAction(sender, response) {
     for (var i = 0; i < offerInfo.length; i++) {
         let offerItem = offerInfo[i];
         console.log("SOY EL ITEM " + i + "  ==>" + offerItem);
-        console.log("Soy el ID de Item " + offerItem.price);
-        let priceInfo = await price.findOne({ _id: offerItem.price });
-        let productInfo = await product.findOne({ _id: priceInfo.product });
+       
+        let priceInfo = await priceRepository.find({ offer: offerItem._id });
+        let productInfo = await productRepository.find({ price: priceInfo._id });
         let albumInfo = await album.findOne({ _id: productInfo.album });
         let presentationInfo = await presentation.findOne({ _id: productInfo.presentation });
-        let itemPrice = priceInfo.standardPrice - (priceInfo.standardPrice * (offerItem.discount / 100));
+        let itemPrice = priceInfo.basePrice - (priceInfo.basePrice * (offerItem.discount / 100));
+        await priceRepository.upsert({_id: priceInfo._id},{
+            salesPrice: itemPrice,
+        })
 
         if (i < 10) {
             let postbackInfo = {
                 "product_id": productInfo._id,
                 "session_id": sender,
-                "postback": "DEVELOPER_DEFINED_COMPRAR_ESTADO7A"
+                "postback": "DEVELOPER_DEFINED_CARRITO_ESTADO19"
             }
             card.push({
                 title: albumInfo.name + " - " + albumInfo.artist,
                 image_url: productInfo.image,
                 subtitle: "Formato: " + presentationInfo.type + "\n" +
-                    "Antes: " + "Bs. " + priceInfo.standardPrice + "\n" +
+                    "Antes: " + "Bs. " + priceInfo.basePrice + "\n" +
                     "Ahora: " + "Bs. " + itemPrice,
                 buttons: [
                     {

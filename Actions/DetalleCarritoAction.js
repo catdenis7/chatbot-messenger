@@ -4,14 +4,12 @@ const orderDetailRepository = require('../Repository/OrderDetailRepository');
 const prospectRepository = require('../Repository/ProspectRepository');
 const clientRepository = require('../Repository/ClientRepository');
 const orderRepository = require('../Repository/OrderRepository');
-const Product = require('../Models/Product');
-const Price = require('../Models/Price');
+const productRepository = require('../Repository/ProductRepository');
 const Album = require('../Models/Album');
 const Presentation = require('../Models/Presentation');
 
 let detalleCarritoAction = {
     async handleAction(sender, response) {
-        let productModel = Product;
         let albumModel = Album;
         let presentationModel = Presentation;
         let getProspect = await prospectRepository.find({ facebookID: sender });
@@ -22,12 +20,12 @@ let detalleCarritoAction = {
         //console.log("soy match order ====>" + matchOrder);
 
         let getOrderDetail = await orderDetailRepository.find({ order: matchOrder._id }, true);
-        //console.log("SOY LAS ORDERNES ====>" + getOrderDetail);
+        console.log("SOY LAS ORDERNES ====>" + getOrderDetail);
         let total = 0;
         let detalleCarritoText = "";
         for (var i = 0; i < getOrderDetail.length; i++) {
             let orderDetailItem = getOrderDetail[i];
-            let getProductInfo = await productModel.findOne({ _id: orderDetailItem.product });
+            let getProductInfo = await productRepository.find({ _id: orderDetailItem.product });
             let getAlbumInfo = await albumModel.findOne({ _id: getProductInfo.album });
             let getPresentationInfo = await presentationModel.findOne({ _id: getProductInfo.presentation });
             total = total + orderDetailItem.detailTotal;
