@@ -4,7 +4,6 @@ const axios = require("axios");
 const uuid = require('uuid');
 const utils = require('../Utils/Utils')
 
-let compraPromocionesAction = require('../Actions/CompraPromocionesAction');
 let datosContactoAction = require('../Actions/DatosContactoAction');
 let datosClienteAction = require('../Actions/DatosClienteAction');
 let informacionAction = require('../Actions/InformacionAction');
@@ -124,14 +123,6 @@ let messengerRespository = {
                 await this.sendButtonMessage(sender, result.buttons.text, result.buttons.buttons);
 
                 break;
-            /*
-            case "CompraPromociones.action":
-                this.sendMessageHandler(sender, await compraPromocionesAction.handleAction(sender, response));
-                break;
-            */
-            case "Estado14.DatosCliente.action":
-                await this.sendMessageHandler(sender, await datosContactoAction.handleAction(sender, response));
-                break;
             case "Estado8.DatosCliente.action":
                 result = await datosClienteAction.handleAction(sender, response);
                 if (result.text == null) {
@@ -143,11 +134,12 @@ let messengerRespository = {
                 break;
             case "Estado10.ValoracionCompra.action":
             case "Estado12.ValoracionNoCompra.action":
-            //case "EstadoV3.MostrarPromos.action":
-            case "Estado9V.ValoracionPromo.action":
             case "Estado17.Valoracion.action":
-                //case "Estado8V.ValoracionPromo.action":
+            case "Estado28.ValoracionPromo.action":
                 this.sendMessageHandler(sender, await valoracionCompraAction.handleAction(this.getSessionIDs(sender), response));
+                break;
+            case "Estado14.DatosCliente.action":
+                await this.sendMessageHandler(sender, await datosContactoAction.handleAction(sender, response));
                 break;
             case "Estado18.ProductosEnPromocion.action":
                 this.sendMessageHandler(sender, await eleccionPromoAction.handleAction(this.getSessionIDs(sender), response));
