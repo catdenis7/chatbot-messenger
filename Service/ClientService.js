@@ -24,7 +24,7 @@ let clientService = {
         try {
 
             let result = {};
-            console.log('Getting Cards');
+            // console.log('Getting Cards');
 
             let prospectContacts = this.toJson(await clientRepository.find({}, true));
             let prospectId = [];
