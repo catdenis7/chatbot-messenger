@@ -63,6 +63,7 @@ let clientService = {
             for (let index = 0; index < clients.length; index++) {
                 let client = clients[index];
                 let clientResult = await orderRepository.find({ client: (client._id) });
+                console.log("SOY CLIENT RESULT ====>" +clientResult);
                 let prospect = await prospectRepository.find({ _id: client.prospect });
                 client.profilePicture = prospect.profilePicture;
                 if (clientResult != null) {
@@ -76,14 +77,14 @@ let clientService = {
 
             for (let index = 0; index < recurringClients.length; index++) {
                 let recurringClient = recurringClients[index];
-                let recurringClientResult = await orderRepository.find({ recurringClient: (recurringClient._id) }, true, { createdAt: -1 });
+                let recurringClientResult = await orderRepository.find({ client: (recurringClient._id) }, true, { createdAt: -1 });
                 let prospect = await prospectRepository.find({ _id: recurringClient.prospect });
                 recurringClient.profilePicture = prospect.profilePicture;
                 if (recurringClient != null) {
-                    let process = this.getFrequencyAndAverage(recurringClient);
+                    let process = this.getFrequencyAndAverage(recurringClientResult);
                     recurringClient.frequency = process.frequency;
                     recurringClient.average = process.average;
-                    recurringClient.order_date = recurringClientResult.createdAt;
+                    recurringClient.order_date = recurringClientResult[0].createdAt;
                 }
             }
 
@@ -141,8 +142,8 @@ let clientService = {
             frequency += clientDetail.date.getTime();
         }
 
-        average /= (index + 1);
-        frequency /= (index + 1);
+        average /= (index);
+        frequency /= (index);
 
         return {
             frequency: frequency,

@@ -37,7 +37,7 @@ let orderService = {
 
             let orderQuantity = 0;
 
-            for (let jindex = 0; index < orderLines.length; index++) {
+            for (let jindex = 0; jindex < orderLines.length; jindex++) {
                 let line = orderLines[jindex];
                 orderQuantity += line.quantity;
                 
