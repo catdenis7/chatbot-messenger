@@ -12,6 +12,8 @@ const Product = require("./Models/Product");
 const Presentation = require("./Models/Presentation");
 const Price = require("./Models/Price");
 const Offer = require("./Models/Offer");
+const Client = require("./Models/Client");
+const Prospect = require("./Models/Prospect");
 
 var app = express();
 let cors = require('cors');
@@ -59,8 +61,6 @@ app.post("/clients/contacts", async (req, res) => await contactController.getCon
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req,res));
 
 app.post('/contacts/save', async (req, res) => await contactController.addContact(req,res));
-
-app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req,res));
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
     let body = req.body;
@@ -151,43 +151,44 @@ app.post("/offer", (req, res) => {
         });
     });
 });
-/*
-app.post("/exists", async (req, res) => {
 
+app.post("/client", (req, res) => {
     let body = req.body;
-    console.log(JSON.stringify(body));
-
-    let album = Album;
-
-    let queryBody = {
-        "name": body["queryResult"]["parameters"]["albumes"],
-        "artist": body["queryResult"]["parameters"]["artista"],
-        "presentation": body["queryResult"]["parameters"]["presentacion"]
-    }
-
-    let result = await album.findOne(queryBody);
-
-    let itemExists = result != null;
-
-    let fulfillmentText = itemExists ? "Si lo this.enemos disponible ¿deseas realizar un pedido?" : "Disculpa, pero no tenemos ese ejemplar disponible. Pero si así lo desea, puede proporcionarnos sus datos para que le notifiquemos cuando el ejemplar que desea vuelva a estar disponible. ¿Le parece? 😄"
-    let outputContext = itemExists ? "/contexts/siDisponible" : "/contexts/noDisponible"
-
-    let rawResponse = {
-        "fulfillmentMessages": [
-            {
-                "text": {
-                    "text": [fulfillmentText]
-                }
-            }
-        ],
-        "outputContexts": [
-            {
-                "name": body['session'] + outputContext,
-                "lifespanCount": 5,
-            }
-        ]
-    }
-
-    res.send(rawResponse);
+    let client = new Client({
+        name: body.name,
+        lastName: body.lastName,
+        phoneNumber: body.phoneNumber,
+        email: body.email,
+        type: body.type,
+        prospect: body.prospect,
+    });
+    client.save((err, clientDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Cliente creado correctamente",
+            client: clientDB,
+        });
+    });
 });
-*/
+
+app.post("/prospect", (req, res) => {
+    let body = req.body;
+    let prospect = new Prospect({
+        facebookID: body.facebookID,
+        facebookName: body.facebookName,
+        profilePicture: body.profilePicture,
+        phoneNumber: body.phoneNumber,
+        email: body.email,
+        url: body.url,
+    });
+    prospect.save((err, prospectDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Prospect creado correctamente",
+            prospect: prospectDB,
+        });
+    });
+});
+

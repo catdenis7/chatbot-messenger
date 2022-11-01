@@ -5,11 +5,6 @@ const orderRepository = require('../Repository/OrderRepository');
 const contactRepository = require('../Repository/ContactRepository');
 
 let datosClienteAction = {async handleAction(sender, response) {
-    console.log("SOY DATOS CLIENTE");
-    console.log("PARAMETERS => ");
-    console.log(JSON.stringify(response.parameters));
-    console.log("CONDICION ====> " + response.allRequiredParamsPresent);
-
     if (!response.allRequiredParamsPresent) {
         return baseAction.response(baseAction.codes.TEXT, response.fulfillmentText);
     }
@@ -38,7 +33,7 @@ let datosClienteAction = {async handleAction(sender, response) {
                     type: "C",            
                 }); 
                 await contactRepository.insert({
-                    date: date.now(),
+                    date: Date.now(),
                     message: "Datos del Cliente Contacto Guardados",
                     client: matchOrder.client,
                     user: null,
