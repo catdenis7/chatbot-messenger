@@ -12,8 +12,6 @@ const Product = require("./Models/Product");
 const Presentation = require("./Models/Presentation");
 const Price = require("./Models/Price");
 const Offer = require("./Models/Offer");
-const Client = require("./Models/Client");
-const Prospect = require("./Models/Prospect");
 
 var app = express();
 let cors = require('cors');
@@ -21,6 +19,8 @@ let clientController = require("./Controller/ClientController");
 let contactController = require("./Controller/ContactController");
 const orderController = require("./Controller/OrderController");
 const ContactMethod = require("./Models/ContactMethod");
+const notificationController = require("./Controller/NotificationController");
+const Notification = require("./Models/Notification");
 
 require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -58,9 +58,13 @@ app.post("/clients/orders", async (req, res) => orderController.getOrders(req, r
 
 app.post("/clients/contacts", async (req, res) => await contactController.getContacts(req, res));
 
+app.post("/clients/notifications", async (req, res) => await notificationController.getNotifications(req, res));
+
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req,res));
 
 app.post('/contacts/save', async (req, res) => await contactController.addContact(req,res));
+
+app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req,res));
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
     let body = req.body;
@@ -152,43 +156,20 @@ app.post("/offer", (req, res) => {
     });
 });
 
-app.post("/client", (req, res) => {
+app.post("/notification", (req, res) =>{
     let body = req.body;
-    let client = new Client({
-        name: body.name,
-        lastName: body.lastName,
-        phoneNumber: body.phoneNumber,
-        email: body.email,
-        type: body.type,
-        prospect: body.prospect,
+    let notification = new Notification({
+        date: body.date,
+        message: body.message,
+        client : body.client,
     });
-    client.save((err, clientDB) => {
+    notification.save((err, offerDB) => {
         if (err) return res.json({ ok: false, msg: "Error" });
         res.json({
             ok: true,
-            msg: "Cliente creado correctamente",
-            client: clientDB,
+            msg: "Noti creado correctamente",
+            price: offerDB,
         });
     });
-});
 
-app.post("/prospect", (req, res) => {
-    let body = req.body;
-    let prospect = new Prospect({
-        facebookID: body.facebookID,
-        facebookName: body.facebookName,
-        profilePicture: body.profilePicture,
-        phoneNumber: body.phoneNumber,
-        email: body.email,
-        url: body.url,
-    });
-    prospect.save((err, prospectDB) => {
-        if (err) return res.json({ ok: false, msg: "Error" });
-        res.json({
-            ok: true,
-            msg: "Prospect creado correctamente",
-            prospect: prospectDB,
-        });
-    });
-});
-
+})
