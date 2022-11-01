@@ -15,6 +15,7 @@ let detalleCarritoAction = require('../Actions/DetalleCarritoAction');
 let filtrarClienteExistenteAction = require('../Actions/FiltrarClienteExistente');
 let mostrarMetodoDePagoAction = require('../Actions/MostrarMetodoDePagoAction');
 let productosArtistaAction = require('../Actions/ProductosArtistaAction');
+let comprobantePagoAction = require('../Actions/ComprobantePagoAction');
 
 const sessionIDs = new Map();
 
@@ -132,6 +133,9 @@ let messengerRespository = {
                 }
                 await this.sendImageMessage(sender, result.image);
                 await this.sendTextMessage(sender, result.text);
+                break;
+            case "Estado9.ComprobantePago.action":
+                await this.sendMessageHandler(sender, await comprobantePagoAction.handleAction(sender, response));
                 break;
             case "Estado10.ValoracionCompra.action":
             case "Estado12.ValoracionNoCompra.action":

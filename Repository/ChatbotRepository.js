@@ -104,7 +104,7 @@ let chatbotRepository = {
                         lastName: null,
                         phoneNumber: null,
                         email: null,
-                        type: "P",
+                        type: "A",
                         prospect: getProspect._id,
                     });
                 }
