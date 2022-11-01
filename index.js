@@ -59,6 +59,8 @@ app.post("/clients/contacts", async (req, res) => await contactController.getCon
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req,res));
 
 app.post('/contacts/save', async (req, res) => await contactController.addContact(req,res));
+
+app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req,res));
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
     let body = req.body;

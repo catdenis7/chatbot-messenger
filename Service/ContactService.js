@@ -1,6 +1,7 @@
+const { getContactMethods } = require("../Controller/ContactController");
 const clientRepository = require("../Repository/ClientRepository");
 const contactRepository = require("../Repository/ContactRepository");
-
+const ContactMethod = require("../Models/ContactMethod");
 let contactService = {
     async addContact(req, res) {
         try {
@@ -20,8 +21,25 @@ let contactService = {
             }
             return result;
         } catch (error) {
+            console.error(error);
             res.statusCode = 500;
-            return {"error" : error}
+            return { "error": error }
+        }
+    },
+
+    async getContactMethods(req, res) {
+        try {
+            let contactMethods = await ContactMethod.find();
+            return contactMethods.map((item) => {
+                return {
+                    value: item._id,
+                    text: item.description
+                }
+            });
+        } catch (error) {
+            res.statusCode = 500;
+            console.error(error);
+            return [];
         }
     }
 }
