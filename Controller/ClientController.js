@@ -11,7 +11,8 @@ let clientController = {
         await clientService.notification(req,res);
     },
     async getPersonalData(req, res){
-        res.send(await clientService.getPersonalData(req, res));
+        let result =await clientService.getPersonalData(req, res);
+        res.send(result);
     }
 
 }
