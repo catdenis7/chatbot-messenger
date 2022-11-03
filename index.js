@@ -23,6 +23,7 @@ const ContactMethod = require("./Models/ContactMethod");
 const Notification = require("./Models/Notification");
 const notificationController = require("./Controller/NotificationController");
 const loginController = require("./Controller/LoginController");
+const prospectController = require("./Controller/ProspectController");
 const { cookie } = require("request");
 
 var app = express();
@@ -95,6 +96,8 @@ app.post("/clients/notifications", async (req, res) => await notificationControl
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req, res));
 
 app.post('/contacts/save', async (req, res) => await contactController.addContact(req, res));
+
+app.post('/prospect/save', async (req, res) => await prospectController.addContact(req, res));
 
 app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req, res));
 

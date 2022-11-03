@@ -149,9 +149,6 @@ let clientService = {
             } else {
                 finalDate = clientDetail.date;
                 frequency = frequency + (this.convertDate(startDate) - this.convertDate(finalDate));
-                console.log("FREQUENCY=====>" + frequency);
-                console.log("inicio ====>" +startDate);
-                console.log("final ===>" +finalDate);
                 startDate = finalDate;
             }
         }
