@@ -1,7 +1,9 @@
 var chatbot = require("./Controller/ChatbotController");
 const mongoose = require('mongoose');
 var dialogflowApi = require("./Controller/DialogflowController");
-
+require('dotenv').config();
+let cors = require('cors');
+let session = require('express-session');
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -13,19 +15,28 @@ const Presentation = require("./Models/Presentation");
 const Price = require("./Models/Price");
 const Offer = require("./Models/Offer");
 
-var app = express();
-let cors = require('cors');
+
 let clientController = require("./Controller/ClientController");
 let contactController = require("./Controller/ContactController");
 const orderController = require("./Controller/OrderController");
 const ContactMethod = require("./Models/ContactMethod");
 const notificationController = require("./Controller/NotificationController");
 const Notification = require("./Models/Notification");
+const loginController = require("./Controller/LoginController");
 
-require('dotenv').config();
+var app = express();
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors({}))
+
+app.use(session({
+    secret: 'esunsecreto',
+    resave: true,
+    saveUninitialized: false 
+}
+));
+
 mongoose.connect(
     String(process.env.MONGODB_URL),
     (err, res) => {
@@ -60,11 +71,21 @@ app.post("/clients/contacts", async (req, res) => await contactController.getCon
 
 app.post("/clients/notifications", async (req, res) => await notificationController.getNotifications(req, res));
 
-app.get('/dashboard/notification', async (req, res) => await clientController.notification(req,res));
+app.get('/dashboard/notification', async (req, res) => await clientController.notification(req, res));
 
-app.post('/contacts/save', async (req, res) => await contactController.addContact(req,res));
+app.post('/contacts/save', async (req, res) => await contactController.addContact(req, res));
 
-app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req,res));
+app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req, res));
+
+//  Login
+app.post('/login', async (req, res) => await loginController.login(req, res));
+app.post('/register', async (req, res) => await loginController.register(req, res));
+
+app.get('/whoami', (req, res) => {
+
+    res.send(req.session);
+})
+
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
     let body = req.body;
@@ -156,12 +177,12 @@ app.post("/offer", (req, res) => {
     });
 });
 
-app.post("/notification", (req, res) =>{
+app.post("/notification", (req, res) => {
     let body = req.body;
     let notification = new Notification({
         date: body.date,
         message: body.message,
-        client : body.client,
+        client: body.client,
     });
     notification.save((err, offerDB) => {
         if (err) return res.json({ ok: false, msg: "Error" });
