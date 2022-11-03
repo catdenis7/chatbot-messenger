@@ -53,6 +53,7 @@ let clientService = {
                 let contactResult = await contactRepository.find({ client: (contact._id) }, true, { "createdAt": -1 });
                 let prospect = await prospectRepository.find({ _id: contact.prospect });
                 contact.profilePicture = prospect.profilePicture;
+                contact.url = prospect.url;
                 contact.contact_count = contactResult.length;
                 if (contactResult.length > 0)
                     contact.last_contact = contactResult[0].createdAt;
@@ -66,6 +67,7 @@ let clientService = {
                 console.log("SOY CLIENT RESULT ====>" + clientResult);
                 let prospect = await prospectRepository.find({ _id: client.prospect });
                 client.profilePicture = prospect.profilePicture;
+                client.url = prospect.url;
                 if (clientResult != null) {
                     let clientDetailResult = await orderDetailRepository.find({ order: clientResult }, true);
                     client.product_count = clientDetailResult.length;
@@ -80,6 +82,7 @@ let clientService = {
                 let recurringClientResult = await orderRepository.find({ client: (recurringClient._id) }, true, { createdAt: -1 });
                 let prospect = await prospectRepository.find({ _id: recurringClient.prospect });
                 recurringClient.profilePicture = prospect.profilePicture;
+                recurringClient.url = prospect.url;
                 if (recurringClient != null) {
                     let process = this.getFrequencyAndAverage(recurringClientResult);
                     recurringClient.frequency = process.frequency;
