@@ -80,6 +80,7 @@ let clientService = {
             for (let index = 0; index < recurringClients.length; index++) {
                 let recurringClient = recurringClients[index];
                 let recurringClientResult = await orderRepository.find({ client: (recurringClient._id) }, true, { createdAt: -1 });
+                console.log("FRECUENT CLIENT RESULT =====>" + recurringClientResult);
                 let prospect = await prospectRepository.find({ _id: recurringClient.prospect });
                 recurringClient.profilePicture = prospect.profilePicture;
                 recurringClient.url = prospect.url;
@@ -138,21 +139,35 @@ let clientService = {
         let frequency = 0;
         let average = 0;
         let index = 0;
-
+        let finalDate;
+        let startDate;
         for (index = 0; index < clientDetailResult.length; index++) {
             const clientDetail = clientDetailResult[index];
             average += clientDetail.total;
-            frequency += clientDetail.date.getTime();
+            if (index == 0){
+                startDate = clientDetail.date;
+            } else {
+                finalDate = clientDetail.date;
+                frequency = frequency + (this.convertDate(startDate) - this.convertDate(finalDate));
+                console.log("FREQUENCY=====>" + frequency);
+                console.log("inicio ====>" +startDate);
+                console.log("final ===>" +finalDate);
+                startDate = finalDate;
+            }
         }
 
         average /= (index);
-        frequency /= (index);
-
+        frequency = (frequency/(1000*60*60*24))/ (index);
         return {
             frequency: frequency,
             average: average,
         }
 
+    },
+
+    convertDate(thedate) {
+        var time = thedate.getTime();
+        return time - (time % 86400000);
     },
 
     async getContacts(req, res) {
