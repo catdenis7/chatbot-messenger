@@ -20,23 +20,44 @@ let clientController = require("./Controller/ClientController");
 let contactController = require("./Controller/ContactController");
 const orderController = require("./Controller/OrderController");
 const ContactMethod = require("./Models/ContactMethod");
-const notificationController = require("./Controller/NotificationController");
 const Notification = require("./Models/Notification");
+const notificationController = require("./Controller/NotificationController");
 const loginController = require("./Controller/LoginController");
+const { cookie } = require("request");
 
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors({}))
+app.use(
+    cors(
+        {
+            credentials: true,
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            origin: ['http://localhost:3000', 'http://127.0.0.1:3000']
+        }
+    ),
+)
 
 app.use(session({
     secret: 'esunsecreto',
     resave: true,
-    saveUninitialized: false 
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        sameSite: "lax"
+    }
 }
 ));
 
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Credentials', true)
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    )
+    next()
+})
 mongoose.connect(
     String(process.env.MONGODB_URL),
     (err, res) => {

@@ -9,6 +9,7 @@ let loginService = {
         try {
             let user = await userRepository.find({ userName: req.body.userName })
 
+            console.log(req.body)
             if (user == null)
                 throw "Usuario no existe"
 
@@ -18,7 +19,11 @@ let loginService = {
                 throw "Contraseña incorrecta"
             req.session.userName = user.userName;
             req.session.userId = user._id;
-            res.send("Loggeado!");
+            result = {
+                userName : user.userName,
+                id : user._id
+            }
+            res.send(result);
         } catch (error) {
             res.statusCode = 500;
             console.log(error);
