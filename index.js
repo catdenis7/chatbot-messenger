@@ -77,8 +77,10 @@ app.post('/contacts/save', async (req, res) => await contactController.addContac
 
 app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req, res));
 
+app.post('/clients/personal_data', async (req, res) => await clientController.getPersonalData(req, res));
 //  Login
 app.post('/login', async (req, res) => await loginController.login(req, res));
+
 app.post('/register', async (req, res) => await loginController.register(req, res));
 
 app.get('/whoami', (req, res) => {

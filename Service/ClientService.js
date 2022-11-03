@@ -4,6 +4,7 @@ const sessionRepository = require('../Repository/SessionRepository');
 const orderDetailRepository = require('../Repository/OrderDetailRepository');
 const orderRepository = require('../Repository/OrderRepository');
 const contactRepository = require('../Repository/ContactRepository');
+const { getPersonalData } = require('../Controller/ClientController');
 let clientService = {
 
     async find(query, many = false) {
@@ -63,7 +64,7 @@ let clientService = {
             for (let index = 0; index < clients.length; index++) {
                 let client = clients[index];
                 let clientResult = await orderRepository.find({ client: (client._id) });
-                console.log("SOY CLIENT RESULT ====>" +clientResult);
+                console.log("SOY CLIENT RESULT ====>" + clientResult);
                 let prospect = await prospectRepository.find({ _id: client.prospect });
                 client.profilePicture = prospect.profilePicture;
                 if (clientResult != null) {
@@ -163,6 +164,16 @@ let clientService = {
         );
         console.log(contacts);
         return contacts;
+    },
+
+    async getPersonalData(req, res) {
+        try {
+            let clientId = req.body.clientId;     
+            //TODO: completar servicio
+        } catch (error) {
+            res.statusCode = 500;
+            res.send(error);
+        }
     }
 
 }
