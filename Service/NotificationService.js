@@ -15,7 +15,7 @@ let notificationService = {
         return await notificationRepository.upsert(query, newData);
     },
 
-    async getNotifications(req, res) {
+    async  getNotifications(req, res) {
         try {
             let clientId = req.body.clientId;
             return this.toJson(await notificationRepository.find({ client: clientId }, true))

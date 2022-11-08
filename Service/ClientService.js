@@ -148,13 +148,17 @@ let clientService = {
                 startDate = clientDetail.date;
             } else {
                 finalDate = clientDetail.date;
-                frequency = frequency + (this.convertDate(startDate) - this.convertDate(finalDate));
+                frequency = frequency + ((this.convertDate(startDate) - this.convertDate(finalDate))/(1000*60*60*24));
+                console.log("start ===>" + startDate);
+                console.log("FINAL ===>" +finalDate);
+                console.log("FFFFFFFF ======>"+ frequency);
                 startDate = finalDate;
             }
         }
 
-        average /= (index);
-        frequency = (frequency/(1000*60*60*24))/ (index);
+        average = Math.round((average/index) * 100) / 100;
+        frequency = Math.round((frequency/ (index -1)) * 100) / 100;
+        
         return {
             frequency: frequency,
             average: average,
