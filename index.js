@@ -14,6 +14,8 @@ const Product = require("./Models/Product");
 const Presentation = require("./Models/Presentation");
 const Price = require("./Models/Price");
 const Offer = require("./Models/Offer");
+const Prospect = require("./Models/Prospect");
+const Client = require("./Models/Client");
 
 
 let clientController = require("./Controller/ClientController");
@@ -216,6 +218,48 @@ app.post("/notification", (req, res) => {
             ok: true,
             msg: "Noti creado correctamente",
             price: offerDB,
+        });
+    });
+
+})
+
+app.post("/prospect", (req, res) => {
+    let body = req.body;
+    let prospect = new Prospect({
+        facebookID: body.facebookID,
+        facebookName: body.facebookName,
+        profilePicture: body.profilePicture,
+        phoneNumber: body.phoneNumber,
+        email: body.email,
+        url: body.url,
+    });
+    prospect.save((err, prospectDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Prospect creado correctamente",
+            price: prospectDB,
+        });
+    });
+
+})
+
+app.post("/client", (req, res) => {
+    let body = req.body;
+    let client = new Client({
+        name: body.name,
+        lastName: body.lastName,
+        phoneNumber: body.phoneNumber,
+        email: body.email,
+        type: body.type,
+        prospect: body.prospect,
+    });
+    client.save((err, clientDB) => {
+        if (err) return res.json({ ok: false, msg: "Error" });
+        res.json({
+            ok: true,
+            msg: "Client creado correctamente",
+            client: clientDB,
         });
     });
 

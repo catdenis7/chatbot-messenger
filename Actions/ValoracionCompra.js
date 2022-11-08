@@ -8,7 +8,7 @@ let valoracionCompraAction = {async handleAction(sender, response) {
         }
 
         console.log("who am i ===> " + sender);
-        sessionService.upsert({ sessionID: sender, score: null, endDate: null}, {
+        sessionService.upsert({ sessionID: sender}, {
             score: queryBody.number,
             endDate: Date.now(),
         });
