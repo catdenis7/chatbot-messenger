@@ -1,4 +1,6 @@
 let notificationRepository = require('../Repository/NotificationRepository');
+let clientRepository = require('../Repository/ClientRepository');
+let offerRepository = require('../Repository/OfferRepository');
 let notificationService = {
 
     async find(query, many = false) {
@@ -15,7 +17,7 @@ let notificationService = {
         return await notificationRepository.upsert(query, newData);
     },
 
-    async  getNotifications(req, res) {
+    async getNotifications(req, res) {
         try {
             let clientId = req.body.clientId;
             return this.toJson(await notificationRepository.find({ client: clientId }, true))
@@ -29,6 +31,71 @@ let notificationService = {
     toJson(document) {
         return JSON.parse(JSON.stringify(document));
     },
+
+    async addPromo(req, res) {
+        try {
+            let data = req.body;
+            let result = {
+                discount: data.discount,
+                title: data.title,
+                description: data.description,
+                date: Date.now(),
+                status: true,
+                fromDate: data.fromDate,
+                toDate: data.toDate,
+            }
+            await offerRepository.insert(result);
+            let client = await clientRepository.find({}, true);
+            for (let index = 0; index < client.length; index++) {
+                const element = client[index]._id;
+                await notificationRepository.insert({
+                    date: Date.now(),
+                    subject: data.title,
+                    message: data.description,
+                    client: element,
+                })
+            }
+            return result;
+        } catch (error) {
+            console.error(error);
+            res.statusCode = 500;
+            return { "error": error }
+        }
+    },
+
+    async getClientEmail() {
+        let client = await clientRepository.find({}, true);
+        let clientEmail = [];
+        /*
+        for (let index = 0; index < client.length; index++) {
+            const element = client[index];
+            if (element.email != null) {
+                clientEmail.push(element.email);
+            }
+        }
+        */
+        clientEmail.push('velaryones@gmail.com');
+        return clientEmail;
+
+    },
+
+
+    async sendEmail(req, res) {
+        try {
+            let data = req.body;
+            let clientEmails = await this.getClientEmail();
+            let content = {
+                'email': clientEmails,
+                'subject': "data.title",
+                'message': "data.description",
+            }
+            return content;
+        } catch (error) {
+            console.error(error);
+            res.statusCode = 500;
+            return [];
+        }
+    }
 }
 
 module.exports = notificationService;

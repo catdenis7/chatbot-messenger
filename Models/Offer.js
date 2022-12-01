@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const OfferSchema = new Schema(
   {
     discount: Number,
+    title: String,
     description: String,
     date: Date,
     status: Boolean,

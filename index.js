@@ -95,6 +95,8 @@ app.post("/clients/contacts", async (req, res) => await contactController.getCon
 
 app.post("/clients/notifications", async (req, res) => await notificationController.getNotifications(req, res));
 
+app.post("/notifications/send_email", async (req, res) => await notificationController.sendEmail(req, res));
+
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req, res));
 
 app.post('/contacts/save', async (req, res) => await contactController.addContact(req, res));

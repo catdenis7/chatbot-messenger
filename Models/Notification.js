@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const NotificationSchema = new Schema({
   date: Date,
+  subject: String,
   message: String,
   client: {type: Schema.ObjectId, ref: "Client"},
 },{timestamps: true}
