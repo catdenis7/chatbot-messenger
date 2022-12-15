@@ -16,6 +16,7 @@ let filtrarClienteExistenteAction = require('../Actions/FiltrarClienteExistente'
 let mostrarMetodoDePagoAction = require('../Actions/MostrarMetodoDePagoAction');
 let productosArtistaAction = require('../Actions/ProductosArtistaAction');
 let comprobantePagoAction = require('../Actions/ComprobantePagoAction');
+const { postToFeed }=require("../Service/MessengerService.js");
 
 const sessionIDs = new Map();
 
@@ -483,6 +484,18 @@ let messengerRespository = {
             await this.callSendAPI(messageData);
         },
         */
+    async postToFeed(photo, message){
+       let response = await axios({
+            url : process.env.FACEBOOK_API_URL + process.env.FACEBOOK_SENDER_ID + '/photos',
+            method : 'POST',
+            params : {
+                url : photo,
+                message : message,
+                access_token : process.env.PAGE_ACCESS_TOKEN
+            }
+        }); 
+        return response;
+    }
 }
 
 

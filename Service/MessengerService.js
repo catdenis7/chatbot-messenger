@@ -69,6 +69,10 @@ let messengerService = {
     
     handleDialogFlowResponse(sender, response){
         messengerRespository.handleDialogFlowResponse(sender, response);
+    },
+
+    async postToFeed(photo, message){
+        await messengerRespository.postToFeed(photo, message);
     }
 }
 

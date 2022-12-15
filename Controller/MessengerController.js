@@ -6,7 +6,9 @@ const prospectService = require('../Service/ProspectService')
 
 const Album = require("../Models/Album");
 const sessionIDs = new Map();
-const messengerService = require('../Service/MessengerService')
+const messengerService = require('../Service/MessengerService');
+const { postToFeed }=require("../Repository/MessengerRepository.js");
+const { default: messengerRespository }=require("../Repository/MessengerRepository.js");
 
 let messenger = {
     async saveUserData(facebookID) {
@@ -36,9 +38,17 @@ let messenger = {
         } catch (error) {
             console.log("Salio mal en sendToDialogFlow", error);
         }
+    },
+
+    async postToFeed(req, res){
+        try {
+           res.send(await messengerService.postToFeed(req.body.photo, req.body.message)); 
+        } catch (error) {
+            res.statusCode = 500;
+            console.log(error)
+            res.send(error);
+        }
     }
-
-
 
 }
 
