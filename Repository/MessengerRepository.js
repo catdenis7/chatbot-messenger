@@ -16,6 +16,7 @@ let filtrarClienteExistenteAction = require('../Actions/FiltrarClienteExistente'
 let mostrarMetodoDePagoAction = require('../Actions/MostrarMetodoDePagoAction');
 let productosArtistaAction = require('../Actions/ProductosArtistaAction');
 let comprobantePagoAction = require('../Actions/ComprobantePagoAction');
+let ordenPendienteAction = require('../Actions/OrdenPendienteAction');
 const { postToFeed }=require("../Service/MessengerService.js");
 
 const sessionIDs = new Map();
@@ -184,7 +185,14 @@ let messengerRespository = {
                 await this.sendImageMessage(sender, result.image);
                 await this.sendTextMessage(sender, result.text);
                 break;
-
+            case "Estado32.OrdenPendiente.action":
+                result = await ordenPendienteAction.handleAction(sender, response);
+                if (result.buttons == null) {
+                     this.sendMessageHandler(sender, result);
+                    break;
+                }
+                await this.sendButtonMessage(sender, result.text, result.buttons);
+                break;
             default:
                 await this.sendTextMessage(sender, response.fulfillmentText);
                 break;
