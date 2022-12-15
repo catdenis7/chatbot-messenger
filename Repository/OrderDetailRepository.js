@@ -40,6 +40,8 @@ let orderDetailRepository = {
 
         return result;
     }
+
+    
 }
 
 module.exports = orderDetailRepository;

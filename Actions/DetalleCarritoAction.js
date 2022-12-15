@@ -7,21 +7,22 @@ const orderRepository = require('../Repository/OrderRepository');
 const productRepository = require('../Repository/ProductRepository');
 const Album = require('../Models/Album');
 const Presentation = require('../Models/Presentation');
+const OrderDetail = require('../Models/OrderDetail');
 
 let detalleCarritoAction = {
     async handleAction(sender, response) {
         try {
             let albumModel = Album;
             let presentationModel = Presentation;
+            let orderDetailModel = OrderDetail;
             let getProspect = await prospectRepository.find({ facebookID: sender });
-            //console.log("SOY GET PROSPECT ===>" + getProspect);
+            
             let getClient = await clientRepository.find({ prospect: getProspect._id });
-            //console.log("SOY GET CLIENT ===>" + getClient);
+            
             let matchOrder = await orderRepository.find({ client: getClient._id, type: "C" });
-            //console.log("soy match order ====>" + matchOrder);
+            
 
             let getOrderDetail = await orderDetailRepository.find({ order: matchOrder._id }, true);
-            console.log("SOY LAS ORDERNES ====>" + getOrderDetail);
             let total = 0;
             let detalleCarritoText = "";
             for (var i = 0; i < getOrderDetail.length; i++) {
@@ -29,11 +30,18 @@ let detalleCarritoAction = {
                 let getProductInfo = await productRepository.find({ _id: orderDetailItem.product });
                 let getAlbumInfo = await albumModel.findOne({ _id: getProductInfo.album });
                 let getPresentationInfo = await presentationModel.findOne({ _id: getProductInfo.presentation });
-                total = total + orderDetailItem.detailTotal;
-                detalleCarritoText = detalleCarritoText + "\n" +
+
+                if (getAlbumInfo != null && getPresentationInfo != null && orderDetailItem.detailTotal != null &&
+                    orderDetailItem.quantity != null && orderDetailItem.productPrice != null){
+                        total = total + orderDetailItem.detailTotal;
+                        detalleCarritoText = detalleCarritoText + "\n" +
                     getAlbumInfo.name + " - " + getAlbumInfo.artist + " ( " + getPresentationInfo.type + " ) \n" +
                     "Cantidad: " + orderDetailItem.quantity + "   Precio Unitario: Bs. " + orderDetailItem.productPrice + "   Total: Bs. " + orderDetailItem.detailTotal + "\n" +
                     "----------------------------------------------";
+                } else {
+                    await orderDetailModel.findOneAndDelete({_id: orderDetailItem._id});
+                }
+                
             }
             detalleCarritoText = detalleCarritoText + " \n PRECIO SUBTOTAL:   " + total;
             let postbackInfo = {
