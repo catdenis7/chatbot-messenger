@@ -32,11 +32,13 @@ const offerController = require('./Controller/OfferController');
 const messengerController = require('./Controller/MessengerController');
 const { cookie } = require("request");
 const { notification } = require("./Service/ClientService");
-
+const fileUpload = require('express-fileupload');
+const path = require('path')
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(fileUpload());
 app.use(
     cors(
         {
@@ -121,6 +123,8 @@ app.post('/login', async (req, res) => await loginController.login(req, res));
 app.post('/register', async (req, res) => await loginController.register(req, res));
 
 app.post('/facebook/post', async (req, res) => await messengerController.postToFeed(req, res));
+
+app.use('/media', express.static(path.join(__dirname, 'media')));
 
 app.get('/whoami', (req, res) => {
 

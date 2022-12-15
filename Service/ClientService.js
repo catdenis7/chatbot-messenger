@@ -125,7 +125,7 @@ let clientService = {
         while (connected) {
             await new Promise(resolve => setTimeout(resolve, 800));
             res.write('event: message\n');  // message event
-            res.write('data: ' + JSON.stringify(await this.getCards()));
+            //res.write('data: ' + JSON.stringify(await this.getCards()));
             res.write("\n\n");
         }
         console.log('Conexion cerrada');

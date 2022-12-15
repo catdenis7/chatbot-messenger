@@ -1,3 +1,4 @@
+const axios = require('axios');
 let notificationRepository = require('../Repository/NotificationRepository');
 let clientRepository = require('../Repository/ClientRepository');
 let offerRepository = require('../Repository/OfferRepository');
@@ -35,6 +36,8 @@ let notificationService = {
     async addPromo(req, res) {
         try {
             let data = req.body;
+            const { image } = req.files;
+            const fileName = image.name + Date.now();
             let result = {
                 discount: data.discount,
                 title: data.title,
@@ -43,21 +46,13 @@ let notificationService = {
                 status: true,
                 fromDate: data.fromDate,
                 toDate: data.toDate,
-                image: data.image
+                image: fileName, 
             }
-            
+            image.mv(__dirname + '/media/' + fileName);
+
             await offerRepository.insert(result);
-            let client = await clientRepository.find({}, true);
-            for (let index = 0; index < client.length; index++) {
-                const element = client[index]._id;
-                await notificationRepository.insert({
-                    date: Date.now(),
-                    subject: data.title,
-                    message: data.description,
-                    client: element,
-                })
-            }
-            return result;
+            //TODO: Asignar Productos
+            return fileName;
         } catch (error) {
             console.error(error);
             res.statusCode = 500;
@@ -65,36 +60,43 @@ let notificationService = {
         }
     },
 
-    async getClientEmail() {
+    async getClientEmail(req, res) {
         let client = await clientRepository.find({}, true);
         let clientEmail = [];
-        /*
         for (let index = 0; index < client.length; index++) {
             const element = client[index];
             if (element.email != null) {
-                clientEmail.push(element.email);
+                clientEmail.push({
+                    'email' : element.email,
+                    'name' : element.name,
+                });
+
+                await notificationRepository.insert({
+                    date: Date.now(),
+                    subject: data.title,
+                    message: data.description,
+                    client: element._id,
+                })
             }
         }
-        */
-        clientEmail.push('velaryones@gmail.com');
         return clientEmail;
-
     },
 
 
-    async sendEmail(req, res) {
+    async sendEmail(image, title, payload) {
         try {
-            let data = req.body;
-            let clientEmails = await this.getClientEmail();
-            let content = {
-                'email': clientEmails,
-                'subject': "data.title",
-                'message': "data.description",
-            }
-            return content;
+            let result = await axios({
+                url: 'https://api.eu1.robocorp.com/process-v1/workspaces/48a6a488-49ab-43d8-bd66-08fdaac243e3/processes/bb34827b-785f-464b-961d-adb2ea28698f/runs',
+                method: 'POST',
+                data: {
+                    image: image,
+                    title: title,
+                    payload : payload
+                }
+            });
+            return result;
         } catch (error) {
             console.error(error);
-            res.statusCode = 500;
             return [];
         }
     }
