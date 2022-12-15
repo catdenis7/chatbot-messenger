@@ -1,7 +1,10 @@
 const axios = require('axios');
+const path = require('path')
 let notificationRepository = require('../Repository/NotificationRepository');
 let clientRepository = require('../Repository/ClientRepository');
 let offerRepository = require('../Repository/OfferRepository');
+const productRepository = require('../Repository/ProductRepository');
+const priceRepository = require('../Repository/PriceRepository');
 let notificationService = {
 
     async find(query, many = false) {
@@ -37,7 +40,7 @@ let notificationService = {
         try {
             let data = req.body;
             const { image } = req.files;
-            const fileName = image.name + Date.now();
+            const fileName = Date.now();
             let result = {
                 discount: data.discount,
                 title: data.title,
@@ -48,15 +51,28 @@ let notificationService = {
                 toDate: data.toDate,
                 image: fileName, 
             }
-            image.mv(__dirname + '/media/' + fileName);
+            await image.mv('/home/Topicos/Topicos-App/Chatbot/media/'+ fileName);
 
-            await offerRepository.insert(result);
-            //TODO: Asignar Productos
+            let offer = await offerRepository.insert(result);
+            console.log('OFFER REGISTRADA');
+            await this.assingOffer(JSON.parse(req.body.products), offer)
             return fileName;
         } catch (error) {
             console.error(error);
             res.statusCode = 500;
             return { "error": error }
+        }
+    },
+    async assingOffer(products, offer){
+        try {
+            for (let index = 0; index < products.length; index++) {
+                const element = products[index];
+                let salesPrice = element.basePrice - (element.basePrice * (100/offer.discount));
+                await priceRepository.update({_id : element.price},{offer : offer});
+                await productRepository.upsert({_id : element._id},{salesPrice : salesPrice});
+           }
+        } catch (error) {
+            
         }
     },
 
@@ -71,17 +87,24 @@ let notificationService = {
                     'name' : element.name,
                 });
 
-                await notificationRepository.insert({
-                    date: Date.now(),
-                    subject: data.title,
-                    message: data.description,
-                    client: element._id,
-                })
             }
         }
         return clientEmail;
     },
 
+    async insertNotifications(title, description){
+        try {
+            
+                await notificationRepository.insert({
+                    date: Date.now(),
+                    subject: title,
+                    message: description,
+                    client: element._id,
+                })
+        } catch (error) {
+            
+        }
+    },
 
     async sendEmail(image, title, payload) {
         try {
@@ -92,8 +115,13 @@ let notificationService = {
                     image: image,
                     title: title,
                     payload : payload
+                },
+                headers: {
+                    'Authorization' : process.env.ROBOCORP_API_KEY
                 }
             });
+            console.log('EMAIL ENVIADO');
+            await this.insertNotifications((title, payload));
             return result;
         } catch (error) {
             console.error(error);

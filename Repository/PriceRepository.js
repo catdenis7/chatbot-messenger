@@ -34,6 +34,15 @@ let priceRepository = {
 
         return await result.save();
     },
+    async update(query, newData) {
+        let price = Price;
+
+        let result = await price.findOneAndUpdate(
+            query, newData,
+        );
+
+        return await result.save();
+    },
     async count(query){
         let price = Price;
         let result = await price.count(query);

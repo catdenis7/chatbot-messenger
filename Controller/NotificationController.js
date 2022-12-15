@@ -2,6 +2,7 @@ const response = require("express");
 const messengerService = require("../Service/MessengerService");
 
 let notificationService = require('../Service/NotificationService');
+const productService = require("../Service/ProductService");
 
 let notificationController = {
     async getNotifications(req, res) {
@@ -27,5 +28,22 @@ let notificationController = {
             res.send(err);
         }
     },
+
+    async getEmails(req,res){
+        try {
+            res.send(await notificationService.getClientEmail(req,res));
+        } catch (error) {
+            console.log(error);
+            res.send([]);   
+        }
+    },
+
+    async getProducts(req, res){
+        try {
+            res.send(await productService.getProducts());
+        } catch (error) {
+           res.send([]); 
+        }
+    }
 }
 module.exports = notificationController;

@@ -17,6 +17,7 @@ let mostrarMetodoDePagoAction = require('../Actions/MostrarMetodoDePagoAction');
 let productosArtistaAction = require('../Actions/ProductosArtistaAction');
 let comprobantePagoAction = require('../Actions/ComprobantePagoAction');
 let ordenPendienteAction = require('../Actions/OrdenPendienteAction');
+let preciosAction = require("../Actions/PreciosAction");
 const { postToFeed }=require("../Service/MessengerService.js");
 
 const sessionIDs = new Map();
@@ -192,6 +193,9 @@ let messengerRespository = {
                     break;
                 }
                 await this.sendButtonMessage(sender, result.text, result.buttons);
+                break;
+            case "Estado33.Precios.action":
+                result = await preciosAction.handleAction(sender, response);
                 break;
             default:
                 await this.sendTextMessage(sender, response.fulfillmentText);

@@ -45,7 +45,7 @@ app.use(
         {
             credentials: true,
             allowedHeaders: ['Content-Type', 'Authorization'],
-            origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://45.79.2.214:5000']
+            origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.46.217.63:3000']
         }
     ),
 )
@@ -126,6 +126,8 @@ app.post('/register', async (req, res) => await loginController.register(req, re
 app.post('/facebook/post', async (req, res) => await messengerController.postToFeed(req, res));
 
 app.get('/products', async (req, res) => await productController.getProducts(req, res));
+
+app.get('/emails', async (req, res) => await notificationController.getEmails(req, res));
 
 app.use('/media', express.static(path.join(__dirname, 'media')));
 

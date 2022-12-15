@@ -72,6 +72,7 @@ let messengerService = {
     },
 
     async postToFeed(photo, message){
+        console.log('FACEBOOK');
         await messengerRespository.postToFeed(photo, message);
     }
 }
