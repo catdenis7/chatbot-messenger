@@ -211,9 +211,13 @@ app.post("/offer", (req, res) => {
     let body = req.body;
     let offer = new Offer({
         discount: body.discount,
+        title: body.title,
+        description: body.description,
         date: body.date,
         status: body.status,
-        price: body.price,
+        fromDate: body.fromDate,
+        toDate: body.toDate,
+        image: body.image,
     });
     offer.save((err, offerDB) => {
         if (err) return res.json({ ok: false, msg: "Error" });

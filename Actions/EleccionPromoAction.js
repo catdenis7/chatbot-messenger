@@ -24,9 +24,20 @@ let eleccionPromoAction = {
                 console.log("SOY EL ITEM " + i + "  ==>" + offerItem);
 
                 let priceInfo = await priceRepository.find({ offer: offerItem._id });
+                if (priceInfo == null)
+                    continue;
                 let productInfo = await productRepository.find({ price: priceInfo._id });
+                if(productInfo == null)
+                    continue;
+
                 let albumInfo = await album.findOne({ _id: productInfo.album });
+                if(albumInfo == null)
+                    continue;
+
                 let presentationInfo = await presentation.findOne({ _id: productInfo.presentation });
+                if(presentationInfo == null)
+                    continue;
+                    
                 let itemPrice = priceInfo.basePrice - (priceInfo.basePrice * (offerItem.discount / 100));
                 await priceRepository.upsert({ _id: priceInfo._id }, {
                     salesPrice: itemPrice,
