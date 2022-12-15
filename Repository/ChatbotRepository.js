@@ -164,6 +164,12 @@ let chatbotRepository = {
             case "DEVELOPER_DEFINED_CONTINUAR":
                 await messengerService.sendToDialogFlow(senderId, payload);
                 break;
+            case "DEVELOPER_DEFINED_SEGUIR_COMPRANDO":
+                await messengerService.sendToDialogFlow(senderId, payload);
+                break;
+            case "DEVELOPER_DEFINED_VER_CARRITO":
+                await messengerService.sendToDialogFlow(senderId, payload);
+                break;
             default:
                 //unindentified payload
                 await messengerService.sendToDialogFlow(senderId, payload);

@@ -188,7 +188,7 @@ let messengerRespository = {
             case "Estado32.OrdenPendiente.action":
                 result = await ordenPendienteAction.handleAction(sender, response);
                 if (result.buttons == null) {
-                     this.sendMessageHandler(sender, result);
+                    this.sendMessageHandler(sender, result);
                     break;
                 }
                 await this.sendButtonMessage(sender, result.text, result.buttons);

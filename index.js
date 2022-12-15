@@ -33,17 +33,19 @@ const messengerController = require('./Controller/MessengerController');
 const productController = require("./Controller/ProductController");
 const { cookie } = require("request");
 const { notification } = require("./Service/ClientService");
-
+const fileUpload = require('express-fileupload');
+const path = require('path')
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(fileUpload());
 app.use(
     cors(
         {
             credentials: true,
             allowedHeaders: ['Content-Type', 'Authorization'],
-            origin: ['http://localhost:3000', 'http://127.0.0.1:3000']
+            origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://45.79.2.214:5000']
         }
     ),
 )
@@ -124,6 +126,8 @@ app.post('/register', async (req, res) => await loginController.register(req, re
 app.post('/facebook/post', async (req, res) => await messengerController.postToFeed(req, res));
 
 app.get('/products', async (req, res) => await productController.getProducts(req, res));
+
+app.use('/media', express.static(path.join(__dirname, 'media')));
 
 app.get('/whoami', (req, res) => {
 
