@@ -9,6 +9,10 @@ let productService = {
         let album = await Album.findOne({_id : product.album});
         let presentation = await Presentation.findOne({_id : product.presentation});
         return album.artist + " - " + album.name + " - " + presentation.type
+    },
+
+    async find(query, many = false) {
+        return await productRepository.find(query, many);    
     }
 }
 

@@ -30,6 +30,7 @@ const loginController = require("./Controller/LoginController");
 const prospectController = require("./Controller/ProspectController");
 const offerController = require('./Controller/OfferController');
 const messengerController = require('./Controller/MessengerController');
+const productController = require("./Controller/ProductController");
 const { cookie } = require("request");
 const { notification } = require("./Service/ClientService");
 
@@ -121,6 +122,8 @@ app.post('/login', async (req, res) => await loginController.login(req, res));
 app.post('/register', async (req, res) => await loginController.register(req, res));
 
 app.post('/facebook/post', async (req, res) => await messengerController.postToFeed(req, res));
+
+app.get('/products', async (req, res) => await productController.getProducts(req, res));
 
 app.get('/whoami', (req, res) => {
 
