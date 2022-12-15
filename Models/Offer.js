@@ -10,6 +10,7 @@ const OfferSchema = new Schema(
     status: Boolean,
     fromDate: Date,
     toDate: Date,
+    image: String
   },
   { timestamps: true }
 );

@@ -7,6 +7,8 @@ let session = require('express-session');
 // Importar las dependencias para configurar el servidor
 var express = require("express");
 var bodyParser = require("body-parser");
+const multer = require('multer');
+const sharp = require('sharp');
 
 // Tablas MongoDB
 const Album = require("./Models/Album");
@@ -26,7 +28,9 @@ const Notification = require("./Models/Notification");
 const notificationController = require("./Controller/NotificationController");
 const loginController = require("./Controller/LoginController");
 const prospectController = require("./Controller/ProspectController");
+const offerController = require('./Controller/OfferController');
 const { cookie } = require("request");
+const { notification } = require("./Service/ClientService");
 
 var app = express();
 
@@ -97,11 +101,15 @@ app.post("/clients/notifications", async (req, res) => await notificationControl
 
 app.post("/notifications/send_email", async (req, res) => await notificationController.sendEmail(req, res));
 
+app.post("/promotions/submit", async (req, res) => await notificationController.addPromo(req, res));
+
 app.get('/dashboard/notification', async (req, res) => await clientController.notification(req, res));
 
 app.post('/contacts/save', async (req, res) => await contactController.addContact(req, res));
 
 app.post('/prospect/save', async (req, res) => await prospectController.addContact(req, res));
+
+app.get('/promotions/', async (req, res) => await offerController.getPromo(req, res));
 
 app.get('/contacts/methods', async (req, res) => await contactController.getContactMethods(req, res));
 
@@ -115,6 +123,16 @@ app.get('/whoami', (req, res) => {
 
     res.send(req.session);
 })
+
+multer.diskStorage({
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+})
+
+app.use(multer({
+    dest: '../uploads'
+}).single('image'));
 
 // Modelos de MongoDB
 app.post("/album", (req, res) => {
@@ -264,5 +282,4 @@ app.post("/client", (req, res) => {
             client: clientDB,
         });
     });
-
 })
