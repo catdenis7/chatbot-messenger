@@ -1,7 +1,7 @@
 const Offer = require('../Models/Offer');
 
 let offerRepository = {
-    async find(query, many = false,sort,populate) {
+    async find(query, many = false, sort, populate) {
         const offer = Offer;
 
         let result;

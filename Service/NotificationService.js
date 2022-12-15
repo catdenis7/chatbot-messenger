@@ -4,7 +4,7 @@ let offerRepository = require('../Repository/OfferRepository');
 let notificationService = {
 
     async find(query, many = false) {
-        return await notificationRepository.find(query, many = many);
+        return await notificationRepository.find(query, true);
     },
 
     async insert(prospectQuery, query) {
@@ -43,7 +43,9 @@ let notificationService = {
                 status: true,
                 fromDate: data.fromDate,
                 toDate: data.toDate,
+                image: data.image
             }
+            
             await offerRepository.insert(result);
             let client = await clientRepository.find({}, true);
             for (let index = 0; index < client.length; index++) {
